@@ -1,0 +1,30 @@
+#!/bin/env php
+<?php
+if ( PHP_SAPI !== 'cli' ) {
+	echo 'Warning: JiraCli should be invoked via the CLI version of PHP, not the ' . PHP_SAPI . ' SAPI' . PHP_EOL;
+}
+
+$paths = array(
+	__DIR__ . '/../vendor',
+	__DIR__ . '/../../..',
+);
+
+$filename = null;
+
+foreach ( $paths as $path ) {
+	$filePath = $path . '/autoload.php';
+	if ( file_exists($filePath) ) {
+		$filename = $filePath;
+		break;
+	}
+}
+
+if ( $filename === null ) {
+	echo 'Cannot find the vendor directory, have you executed `composer install` command?' . PHP_EOL;
+	exit(1);
+}
+
+require_once $filename;
+
+$app = new \aik099\JiraCli\Application();
+$app->init(new \aik099\JiraCli\DIContainer())->run();
