@@ -2,18 +2,11 @@
     "alias": "jira-cli.phar",
     "chmod": "0755",
     "directories": ["src", "bin"],
-    "files": [
-		"LICENSE"
-	],
     "finder": [
         {
             "name": "*.php",
             "exclude": [
                 "tests",
-                "behat",
-                "phpunit",
-                "mockery",
-                "sebastian",
                 "*Test.php",
                 "test",
                 "Tests",
@@ -23,10 +16,9 @@
             "in": "vendor"
         }
     ],
-
-    "blacklist": ["vendor/phpunit", "vendor/mockery", "vendor/sebastian"],
+	"blacklist": ["vendor/aik099/coding-standard"],
     "main": "bin/jira-cli",
-    "git-version": "package_version",
+	"git-version": "git-version",
     "output": "build/jira-cli.phar",
     "stub": true
 }

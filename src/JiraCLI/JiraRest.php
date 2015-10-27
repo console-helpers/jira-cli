@@ -8,7 +8,7 @@
  * @link      https://github.com/aik099/jira-cli
  */
 
-namespace aik099\JiraCli;
+namespace aik099\JiraCLI;
 
 
 use GuzzleHttp\ClientInterface;
