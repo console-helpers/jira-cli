@@ -1,11 +1,11 @@
 <?php
 /**
- * This file is part of the jira-cli library.
+ * This file is part of the Jira-CLI library.
  * For the full copyright and license information, please view
  * the LICENSE file that was distributed with this source code.
  *
  * @copyright Alexander Obuhovich <aik.bold@gmail.com>
- * @link      https://github.com/aik099/jira-cli
+ * @link      https://github.com/console-helpers/jira-cli
  */
 
 namespace aik099\JiraCLI\Command;
