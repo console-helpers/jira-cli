@@ -12,20 +12,13 @@ namespace aik099\JiraCLI\Command;
 
 
 use aik099\JiraCLI\Config\ConfigEditor;
-use aik099\JiraCLI\ConsoleIO;
-use aik099\JiraCLI\Helper\ContainerHelper;
 use aik099\JiraCLI\JiraRest;
-use Pimple\Container;
-use Stecman\Component\Symfony\Console\BashCompletion\Completion\CompletionAwareInterface;
-use Stecman\Component\Symfony\Console\BashCompletion\CompletionContext;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+use ConsoleHelpers\ConsoleKit\Command\AbstractCommand as BaseCommand;
 
 /**
  * Base command class.
  */
-abstract class AbstractCommand extends Command implements CompletionAwareInterface
+abstract class AbstractCommand extends BaseCommand
 {
 
 	/**
@@ -36,61 +29,11 @@ abstract class AbstractCommand extends Command implements CompletionAwareInterfa
 	private $_configEditor;
 
 	/**
-	 * Console IO.
-	 *
-	 * @var ConsoleIO
-	 */
-	protected $io;
-
-	/**
 	 * Jira REST.
 	 *
 	 * @var JiraRest
 	 */
 	protected $jiraRest;
-
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function initialize(InputInterface $input, OutputInterface $output)
-	{
-		parent::initialize($input, $output);
-
-		// Don't use IO from container, because it contains outer IO which doesn't reflect sub-command calls.
-		$this->io = new ConsoleIO($input, $output, $this->getHelperSet());
-
-		$this->prepareDependencies();
-	}
-
-	/**
-	 * Return possible values for the named option
-	 *
-	 * @param string            $optionName Option name.
-	 * @param CompletionContext $context    Completion context.
-	 *
-	 * @return array
-	 */
-	public function completeOptionValues($optionName, CompletionContext $context)
-	{
-		$this->prepareDependencies();
-
-		return array();
-	}
-
-	/**
-	 * Return possible values for the named argument
-	 *
-	 * @param string            $argumentName Argument name.
-	 * @param CompletionContext $context      Completion context.
-	 *
-	 * @return array
-	 */
-	public function completeArgumentValues($argumentName, CompletionContext $context)
-	{
-		$this->prepareDependencies();
-
-		return array();
-	}
 
 	/**
 	 * Prepare dependencies.
@@ -115,25 +58,6 @@ abstract class AbstractCommand extends Command implements CompletionAwareInterfa
 	protected function getSetting($name)
 	{
 		return $this->_configEditor->get($name);
-	}
-
-	/**
-	 * Returns container.
-	 *
-	 * @return Container
-	 */
-	protected function getContainer()
-	{
-		static $container;
-
-		if ( !isset($container) ) {
-			/** @var ContainerHelper $container_helper */
-			$container_helper = $this->getHelper('container');
-
-			$container = $container_helper->getContainer();
-		}
-
-		return $container;
 	}
 
 }

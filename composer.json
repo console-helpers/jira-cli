@@ -12,7 +12,8 @@
 		"symfony/console": "~2.4",
 		"pimple/pimple": ">=2.0",
 		"stecman/symfony-console-completion": "~0.6@dev",
-		"guzzlehttp/guzzle": "~4.0"
+		"guzzlehttp/guzzle": "~4.0",
+		"console-helpers/console-kit": "^0.0.1"
 	},
 	"require-dev": {
 		"aik099/coding-standard": "dev-master"
