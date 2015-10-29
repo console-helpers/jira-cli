@@ -11,6 +11,6 @@
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
-$container = new \aik099\JiraCLI\Container();
-$app = new \aik099\JiraCLI\Application($container);
+$container = new \ConsoleHelpers\JiraCLI\Container();
+$app = new \ConsoleHelpers\JiraCLI\Application($container);
 $app->run();

@@ -8,10 +8,10 @@
  * @link      https://github.com/console-helpers/jira-cli
  */
 
-namespace aik099\JiraCLI;
+namespace ConsoleHelpers\JiraCLI;
 
 
-use aik099\JiraCLI\Config\ConfigEditor;
+use ConsoleHelpers\JiraCLI\Config\ConfigEditor;
 use GuzzleHttp\Client;
 
 class Container extends \ConsoleHelpers\ConsoleKit\Container

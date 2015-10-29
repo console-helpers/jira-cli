@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "ec761f4ed61424e5468f6ee6cc64f77c",
-    "content-hash": "d85e9e09cceab70da05ac28ad3158a1e",
+    "hash": "3a3e24ccb0fb884dd9892780330e7c64",
+    "content-hash": "a9af2010252572b9feec96dacf45c736",
     "packages": [
         {
             "name": "console-helpers/console-kit",
@@ -221,7 +221,7 @@
         },
         {
             "name": "stecman/symfony-console-completion",
-            "version": "dev-master",
+            "version": "0.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stecman/symfony-console-completion.git",
@@ -366,7 +366,6 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "stecman/symfony-console-completion": 20,
         "aik099/coding-standard": 20
     },
     "prefer-stable": false,

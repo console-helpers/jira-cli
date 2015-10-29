@@ -8,11 +8,11 @@
  * @link      https://github.com/console-helpers/jira-cli
  */
 
-namespace aik099\JiraCLI\Command;
+namespace ConsoleHelpers\JiraCLI\Command;
 
 
-use aik099\JiraCLI\Config\ConfigEditor;
-use aik099\JiraCLI\JiraRest;
+use ConsoleHelpers\JiraCLI\Config\ConfigEditor;
+use ConsoleHelpers\JiraCLI\JiraRest;
 use ConsoleHelpers\ConsoleKit\Command\AbstractCommand as BaseCommand;
 
 /**

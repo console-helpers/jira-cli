@@ -17,12 +17,12 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"aik099\\JiraCLI\\": "src/JiraCLI/"
+			"ConsoleHelpers\\JiraCLI\\": "src/JiraCLI/"
 		}
 	},
 	"autoload-dev": {
 		"psr-4": {
-			"Tests\\aik099\\JiraCLI\\": "tests/JiraCLI/"
+			"Tests\\ConsoleHelpers\\JiraCLI\\": "tests/JiraCLI/"
 		}
 	},
 	"bin": ["bin/jira-cli"]

@@ -8,10 +8,10 @@
  * @link      https://github.com/console-helpers/jira-cli
  */
 
-namespace aik099\JiraCLI;
+namespace ConsoleHelpers\JiraCLI;
 
 
-use aik099\JiraCLI\Command\DownloadAttachment;
+use ConsoleHelpers\JiraCLI\Command\DownloadAttachment;
 use ConsoleHelpers\ConsoleKit\Application as BaseApplication;
 use Symfony\Component\Console\Command\Command;
 

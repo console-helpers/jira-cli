@@ -8,7 +8,7 @@
  * @link      https://github.com/console-helpers/jira-cli
  */
 
-namespace aik099\JiraCLI;
+namespace ConsoleHelpers\JiraCLI;
 
 
 use GuzzleHttp\ClientInterface;

@@ -8,7 +8,7 @@
  * @link      https://github.com/console-helpers/jira-cli
  */
 
-namespace aik099\JiraCLI\Command;
+namespace ConsoleHelpers\JiraCLI\Command;
 
 
 use Symfony\Component\Console\Input\InputArgument;
