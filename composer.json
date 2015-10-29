@@ -1,6 +1,6 @@
 {
-	"name": "aik099/jira-cli",
-	"description": "Toolbox for working with Jira from command line",
+	"name": "console-helpers/jira-cli",
+	"description": "Toolbox for working with JIRA from command line",
 	"license": "BSD-3-Clause",
 	"authors": [
 		{
@@ -9,16 +9,12 @@
 		}
 	],
 	"require": {
-		"symfony/console": "~2.4",
-		"pimple/pimple": ">=2.0",
-		"stecman/symfony-console-completion": "~0.6@dev",
 		"guzzlehttp/guzzle": "~4.0",
 		"console-helpers/console-kit": "^0.0.1"
 	},
 	"require-dev": {
 		"aik099/coding-standard": "dev-master"
 	},
-	"bin": ["bin/jira-cli"],
 	"autoload": {
 		"psr-4": {
 			"aik099\\JiraCLI\\": "src/JiraCLI/"
@@ -28,5 +24,6 @@
 		"psr-4": {
 			"Tests\\aik099\\JiraCLI\\": "tests/JiraCLI/"
 		}
-	}
+	},
+	"bin": ["bin/jira-cli"]
 }

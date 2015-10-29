@@ -1,0 +1,376 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "hash": "ec761f4ed61424e5468f6ee6cc64f77c",
+    "content-hash": "d85e9e09cceab70da05ac28ad3158a1e",
+    "packages": [
+        {
+            "name": "console-helpers/console-kit",
+            "version": "v0.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/console-helpers/console-kit.git",
+                "reference": "9e0c5bedf16c6e76d23b5346ba84465013bf2959"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/console-helpers/console-kit/zipball/9e0c5bedf16c6e76d23b5346ba84465013bf2959",
+                "reference": "9e0c5bedf16c6e76d23b5346ba84465013bf2959",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.2",
+                "pimple/pimple": "^2.0|^3.0",
+                "stecman/symfony-console-completion": "^0.6.1",
+                "symfony/console": "^2.7"
+            },
+            "require-dev": {
+                "aik099/coding-standard": "dev-master"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "ConsoleHelpers\\ConsoleKit\\": "src/ConsoleKit/",
+                    "Tests\\ConsoleHelpers\\ConsoleKit\\": "tests/ConsoleKit/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD 3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Alexander Obuhovich",
+                    "email": "aik.bold@gmail.com"
+                }
+            ],
+            "description": "Toolkit for creating command line applications using Symfony Console component",
+            "time": "2015-10-29 20:29:50"
+        },
+        {
+            "name": "guzzlehttp/guzzle",
+            "version": "4.2.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/guzzle/guzzle.git",
+                "reference": "66fd916e9f9130bc22c51450476823391cb2f67c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/66fd916e9f9130bc22c51450476823391cb2f67c",
+                "reference": "66fd916e9f9130bc22c51450476823391cb2f67c",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "guzzlehttp/streams": "~2.1",
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "ext-curl": "*",
+                "phpunit/phpunit": "~4.0",
+                "psr/log": "~1.0"
+            },
+            "suggest": {
+                "ext-curl": "Guzzle will use specific adapters if cURL is present"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "4.2-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "GuzzleHttp\\": "src/"
+                },
+                "files": [
+                    "src/functions.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michael Dowling",
+                    "email": "mtdowling@gmail.com",
+                    "homepage": "https://github.com/mtdowling"
+                }
+            ],
+            "description": "Guzzle is a PHP HTTP client library and framework for building RESTful web service clients",
+            "homepage": "http://guzzlephp.org/",
+            "keywords": [
+                "client",
+                "curl",
+                "framework",
+                "http",
+                "http client",
+                "rest",
+                "web service"
+            ],
+            "time": "2014-10-05 19:29:14"
+        },
+        {
+            "name": "guzzlehttp/streams",
+            "version": "2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/guzzle/streams.git",
+                "reference": "f91b721d73f0e561410903b3b3c90a5d0e40b534"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/guzzle/streams/zipball/f91b721d73f0e561410903b3b3c90a5d0e40b534",
+                "reference": "f91b721d73f0e561410903b3b3c90a5d0e40b534",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "GuzzleHttp\\Stream\\": "src/"
+                },
+                "files": [
+                    "src/functions.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michael Dowling",
+                    "email": "mtdowling@gmail.com",
+                    "homepage": "https://github.com/mtdowling"
+                }
+            ],
+            "description": "Provides a simple abstraction over streams of data (Guzzle 4+)",
+            "homepage": "http://guzzlephp.org/",
+            "keywords": [
+                "Guzzle",
+                "stream"
+            ],
+            "time": "2014-08-17 21:15:53"
+        },
+        {
+            "name": "pimple/pimple",
+            "version": "v3.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/silexphp/Pimple.git",
+                "reference": "a30f7d6e57565a2e1a316e1baf2a483f788b258a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/silexphp/Pimple/zipball/a30f7d6e57565a2e1a316e1baf2a483f788b258a",
+                "reference": "a30f7d6e57565a2e1a316e1baf2a483f788b258a",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Pimple": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                }
+            ],
+            "description": "Pimple, a simple Dependency Injection Container",
+            "homepage": "http://pimple.sensiolabs.org",
+            "keywords": [
+                "container",
+                "dependency injection"
+            ],
+            "time": "2015-09-11 15:10:35"
+        },
+        {
+            "name": "stecman/symfony-console-completion",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/stecman/symfony-console-completion.git",
+                "reference": "983d6f07b4edf307969f4edf5ab290fd1fb2f5a2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/stecman/symfony-console-completion/zipball/983d6f07b4edf307969f4edf5ab290fd1fb2f5a2",
+                "reference": "983d6f07b4edf307969f4edf5ab290fd1fb2f5a2",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.2",
+                "symfony/console": "~2.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.4"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.6.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Stecman\\Component\\Symfony\\Console\\BashCompletion\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Stephen Holdaway",
+                    "email": "stephen@stecman.co.nz"
+                }
+            ],
+            "description": "Automatic BASH completion for Symfony Console Component based applications.",
+            "time": "2015-09-30 10:14:44"
+        },
+        {
+            "name": "symfony/console",
+            "version": "v2.7.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/console.git",
+                "reference": "5efd632294c8320ea52492db22292ff853a43766"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/console/zipball/5efd632294c8320ea52492db22292ff853a43766",
+                "reference": "5efd632294c8320ea52492db22292ff853a43766",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.9"
+            },
+            "require-dev": {
+                "psr/log": "~1.0",
+                "symfony/event-dispatcher": "~2.1",
+                "symfony/process": "~2.1"
+            },
+            "suggest": {
+                "psr/log": "For using the console logger",
+                "symfony/event-dispatcher": "",
+                "symfony/process": ""
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.7-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\Console\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony Console Component",
+            "homepage": "https://symfony.com",
+            "time": "2015-10-20 14:38:46"
+        }
+    ],
+    "packages-dev": [
+        {
+            "name": "aik099/coding-standard",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/aik099/CodingStandard.git",
+                "reference": "b36c9389bd8caaeb28fdc960ec9c1c3a5a7d759e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/aik099/CodingStandard/zipball/b36c9389bd8caaeb28fdc960ec9c1c3a5a7d759e",
+                "reference": "b36c9389bd8caaeb28fdc960ec9c1c3a5a7d759e",
+                "shasum": ""
+            },
+            "require-dev": {
+                "squizlabs/php_codesniffer": "~2.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Alexander Obuhovich",
+                    "email": "aik.bold@gmail.com"
+                }
+            ],
+            "description": "The PHP_CodeSniffer coding standard I'm using on all of my projects.",
+            "keywords": [
+                "PHP_CodeSniffer",
+                "codesniffer"
+            ],
+            "time": "2015-10-22 19:29:49"
+        }
+    ],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": {
+        "stecman/symfony-console-completion": 20,
+        "aik099/coding-standard": 20
+    },
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": []
+}
