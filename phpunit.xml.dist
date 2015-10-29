@@ -5,8 +5,8 @@
 	verbose="true">
 
 	<testsuites>
-		<testsuite name="JiraCli">
-			<directory>tests/JiraCLI</directory>
+		<testsuite name="default">
+			<directory>tests</directory>
 		</testsuite>
 	</testsuites>
 
@@ -16,9 +16,13 @@
 			 lowUpperBound="35" highLowerBound="70"/>
 	</logging>-->
 
+	<php>
+		<server name="working_directory" value=".jira-cli"/>
+	</php>
+
 	<filter>
 		<whitelist>
-            <directory>src/JiraCLI</directory>
+            <directory>src</directory>
 		</whitelist>
 	</filter>
 </phpunit>
