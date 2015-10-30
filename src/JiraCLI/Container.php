@@ -11,7 +11,7 @@
 namespace ConsoleHelpers\JiraCLI;
 
 
-use ConsoleHelpers\JiraCLI\Config\ConfigEditor;
+use ConsoleHelpers\ConsoleKit\Config\ConfigEditor;
 use GuzzleHttp\Client;
 
 class Container extends \ConsoleHelpers\ConsoleKit\Container

@@ -11,7 +11,7 @@
 namespace ConsoleHelpers\JiraCLI\Command;
 
 
-use ConsoleHelpers\JiraCLI\Config\ConfigEditor;
+use ConsoleHelpers\ConsoleKit\Config\ConfigEditor;
 use ConsoleHelpers\JiraCLI\JiraRest;
 use ConsoleHelpers\ConsoleKit\Command\AbstractCommand as BaseCommand;
 
