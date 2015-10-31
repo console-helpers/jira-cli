@@ -9,8 +9,9 @@
 		}
 	],
 	"require": {
-		"guzzlehttp/guzzle": "~4.0",
-		"console-helpers/console-kit": "^0.0.1"
+		"console-helpers/console-kit": "^0.0.1",
+		"chobie/jira-api-restclient": "^2.0@dev",
+        "guzzlehttp/guzzle": "^3.8"
 	},
 	"require-dev": {
 		"aik099/coding-standard": "dev-master"

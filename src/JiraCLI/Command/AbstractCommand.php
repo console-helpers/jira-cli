@@ -11,8 +11,8 @@
 namespace ConsoleHelpers\JiraCLI\Command;
 
 
+use chobie\Jira\Api;
 use ConsoleHelpers\ConsoleKit\Config\ConfigEditor;
-use ConsoleHelpers\JiraCLI\JiraRest;
 use ConsoleHelpers\ConsoleKit\Command\AbstractCommand as BaseCommand;
 
 /**
@@ -29,9 +29,9 @@ abstract class AbstractCommand extends BaseCommand
 	private $_configEditor;
 
 	/**
-	 * Jira REST.
+	 * Jira REST client.
 	 *
-	 * @var JiraRest
+	 * @var Api
 	 */
 	protected $jiraRest;
 
@@ -58,6 +58,18 @@ abstract class AbstractCommand extends BaseCommand
 	protected function getSetting($name)
 	{
 		return $this->_configEditor->get($name);
+	}
+
+	/**
+	 * Checks if an issue key is valid.
+	 *
+	 * @param string $issue_key Issue key.
+	 *
+	 * @return boolean
+	 */
+	public function isValidIssueKey($issue_key)
+	{
+		return preg_match('/^([A-Z]+-[0-9]+)$/', $issue_key);
 	}
 
 }
