@@ -13,6 +13,7 @@ namespace ConsoleHelpers\JiraCLI;
 
 use ConsoleHelpers\JiraCLI\Command\DownloadAttachmentCommand;
 use ConsoleHelpers\ConsoleKit\Application as BaseApplication;
+use ConsoleHelpers\JiraCLI\Command\VersionsCommand;
 use Symfony\Component\Console\Command\Command;
 
 class Application extends BaseApplication
@@ -27,6 +28,7 @@ class Application extends BaseApplication
 	{
 		$default_commands = parent::getDefaultCommands();
 		$default_commands[] = new DownloadAttachmentCommand();
+		$default_commands[] = new VersionsCommand();
 
 		return $default_commands;
 	}
