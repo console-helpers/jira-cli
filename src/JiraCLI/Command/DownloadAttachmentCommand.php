@@ -43,7 +43,7 @@ class DownloadAttachmentCommand extends AbstractCommand
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		$issue_key = $this->getIssueKey();
-		$issue_data = $this->jiraRest->getIssue($issue_key)->getResult();
+		$issue_data = $this->jiraApi->getIssue($issue_key)->getResult();
 
 		$attachments = $issue_data['fields']['attachment'];
 
@@ -72,7 +72,7 @@ class DownloadAttachmentCommand extends AbstractCommand
 			$this->io->write('- ' . $attachment_data['filename'] . ' ... ');
 			file_put_contents(
 				$attachment_data['filename'],
-				$this->jiraRest->downloadAttachment($attachment_data['content'])
+				$this->jiraApi->downloadAttachment($attachment_data['content'])
 			);
 			$this->io->writeln('done');
 		}

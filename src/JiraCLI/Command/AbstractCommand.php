@@ -33,7 +33,7 @@ abstract class AbstractCommand extends BaseCommand
 	 *
 	 * @var Api
 	 */
-	protected $jiraRest;
+	protected $jiraApi;
 
 	/**
 	 * Prepare dependencies.
@@ -45,7 +45,7 @@ abstract class AbstractCommand extends BaseCommand
 		$container = $this->getContainer();
 
 		$this->_configEditor = $container['config_editor'];
-		$this->jiraRest = $container['jira_rest'];
+		$this->jiraApi = $container['jira_api'];
 	}
 
 	/**

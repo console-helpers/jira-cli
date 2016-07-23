@@ -36,7 +36,7 @@ class Container extends \ConsoleHelpers\ConsoleKit\Container
 			'jira.password' => '',
 		);
 
-		$this['jira_rest'] = function ($c) {
+		$this['jira_api'] = function ($c) {
 			/** @var ConfigEditor $config_editor */
 			$config_editor = $c['config_editor'];
 
