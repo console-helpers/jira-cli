@@ -14,7 +14,6 @@ namespace ConsoleHelpers\JiraCLI;
 use chobie\Jira\Api;
 use chobie\Jira\Api\Authentication\Basic;
 use ConsoleHelpers\ConsoleKit\Config\ConfigEditor;
-use Guzzle\Http\Client;
 
 class Container extends \ConsoleHelpers\ConsoleKit\Container
 {
@@ -41,13 +40,14 @@ class Container extends \ConsoleHelpers\ConsoleKit\Container
 			/** @var ConfigEditor $config_editor */
 			$config_editor = $c['config_editor'];
 
+			$authentication = new Basic(
+				$config_editor->get('jira.username'),
+				$config_editor->get('jira.password')
+			);
+
 			return new Api(
 				$config_editor->get('jira.url'),
-				new Basic(
-					$config_editor->get('jira.username'),
-					$config_editor->get('jira.password')
-				),
-				new GuzzleClient(new Client())
+				$authentication
 			);
 		};
 	}
