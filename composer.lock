@@ -13,12 +13,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/chobie/jira-api-restclient.git",
-                "reference": "8ebd533f8aae0c7967bcfa999047e73bd3417c8c"
+                "reference": "8eed514a8bc21a3a9b9e4eaca891c6ae27439474"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/chobie/jira-api-restclient/zipball/8ebd533f8aae0c7967bcfa999047e73bd3417c8c",
-                "reference": "8ebd533f8aae0c7967bcfa999047e73bd3417c8c",
+                "url": "https://api.github.com/repos/chobie/jira-api-restclient/zipball/8eed514a8bc21a3a9b9e4eaca891c6ae27439474",
+                "reference": "8eed514a8bc21a3a9b9e4eaca891c6ae27439474",
                 "shasum": ""
             },
             "require": {
@@ -26,7 +26,8 @@
             },
             "require-dev": {
                 "aik099/coding-standard": "dev-master",
-                "phpunit/phpunit": "^4.1|^5.0"
+                "phpunit/phpunit": "^4.1|^5.0",
+                "squizlabs/php_codesniffer": "^2.6"
             },
             "type": "library",
             "extra": {
@@ -56,7 +57,7 @@
                 "jira",
                 "rest"
             ],
-            "time": "2016-07-03 12:14:08"
+            "time": "2016-10-08 12:37:50"
         },
         {
             "name": "console-helpers/console-kit",
@@ -153,6 +154,53 @@
             "time": "2015-09-11 15:10:35"
         },
         {
+            "name": "psr/log",
+            "version": "1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/log.git",
+                "reference": "4ebe3a8bf773a19edfe0a84b6585ba3d401b724d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/4ebe3a8bf773a19edfe0a84b6585ba3d401b724d",
+                "reference": "4ebe3a8bf773a19edfe0a84b6585ba3d401b724d",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\Log\\": "Psr/Log/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "http://www.php-fig.org/"
+                }
+            ],
+            "description": "Common interface for logging libraries",
+            "homepage": "https://github.com/php-fig/log",
+            "keywords": [
+                "log",
+                "psr",
+                "psr-3"
+            ],
+            "time": "2016-10-10 12:19:37"
+        },
+        {
             "name": "stecman/symfony-console-completion",
             "version": "0.6.2",
             "source": {
@@ -199,20 +247,21 @@
         },
         {
             "name": "symfony/console",
-            "version": "v2.8.8",
+            "version": "v2.8.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
-                "reference": "c392a6ec72f2122748032c2ad6870420561ffcfa"
+                "reference": "7350016c8abcab897046f1aead2b766b84d3eff8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/console/zipball/c392a6ec72f2122748032c2ad6870420561ffcfa",
-                "reference": "c392a6ec72f2122748032c2ad6870420561ffcfa",
+                "url": "https://api.github.com/repos/symfony/console/zipball/7350016c8abcab897046f1aead2b766b84d3eff8",
+                "reference": "7350016c8abcab897046f1aead2b766b84d3eff8",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.9",
+                "symfony/debug": "~2.7,>=2.7.2|~3.0.0",
                 "symfony/polyfill-mbstring": "~1.0"
             },
             "require-dev": {
@@ -255,7 +304,64 @@
             ],
             "description": "Symfony Console Component",
             "homepage": "https://symfony.com",
-            "time": "2016-06-29 07:02:14"
+            "time": "2016-10-06 01:43:09"
+        },
+        {
+            "name": "symfony/debug",
+            "version": "v2.8.13",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/debug.git",
+                "reference": "8c29235936a47473af16fb91c7c4b7b193c5693c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/debug/zipball/8c29235936a47473af16fb91c7c4b7b193c5693c",
+                "reference": "8c29235936a47473af16fb91c7c4b7b193c5693c",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.9",
+                "psr/log": "~1.0"
+            },
+            "conflict": {
+                "symfony/http-kernel": ">=2.3,<2.3.24|~2.4.0|>=2.5,<2.5.9|>=2.6,<2.6.2"
+            },
+            "require-dev": {
+                "symfony/class-loader": "~2.2|~3.0.0",
+                "symfony/http-kernel": "~2.3.24|~2.5.9|~2.6,>=2.6.2|~3.0.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.8-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\Debug\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony Debug Component",
+            "homepage": "https://symfony.com",
+            "time": "2016-09-06 10:55:00"
         },
         {
             "name": "symfony/polyfill-mbstring",
@@ -324,12 +430,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/aik099/CodingStandard.git",
-                "reference": "3455e4d487e2cdd6460d2414d946de5cfabcd69f"
+                "reference": "ce1586333f0e0851d006034beaed34a4b9438c92"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aik099/CodingStandard/zipball/3455e4d487e2cdd6460d2414d946de5cfabcd69f",
-                "reference": "3455e4d487e2cdd6460d2414d946de5cfabcd69f",
+                "url": "https://api.github.com/repos/aik099/CodingStandard/zipball/ce1586333f0e0851d006034beaed34a4b9438c92",
+                "reference": "ce1586333f0e0851d006034beaed34a4b9438c92",
                 "shasum": ""
             },
             "require-dev": {
@@ -356,7 +462,7 @@
                 "PHP_CodeSniffer",
                 "codesniffer"
             ],
-            "time": "2016-05-21 12:59:53"
+            "time": "2016-08-07 11:47:06"
         }
     ],
     "aliases": [],
