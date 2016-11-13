@@ -11,6 +11,7 @@
 namespace ConsoleHelpers\JiraCLI\Command;
 
 
+use chobie\Jira\Api;
 use chobie\Jira\Issue;
 use chobie\Jira\Issues\Walker;
 use ConsoleHelpers\ConsoleKit\Exception\CommandException;
@@ -22,6 +23,24 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class BackportCommand extends AbstractCommand
 {
+
+	const ISSUE_LINK_NAME = 'Backports';
+
+	/**
+	 * Specifies custom fields to copy during backporting.
+	 *
+	 * @var array
+	 */
+	protected $copyCustomFields = array(
+		'Change Log Group', 'Change Log Message',
+	);
+
+	/**
+	 * Custom fields map.
+	 *
+	 * @var array
+	 */
+	protected $customFieldsMap = array();
 
 	/**
 	 * {@inheritdoc}
@@ -51,6 +70,8 @@ class BackportCommand extends AbstractCommand
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
+		$this->buildCustomFieldsMap();
+
 		$this->jiraApi->setOptions(0); // Don't expand fields.
 		$project_key = $this->io->getArgument('project_key');
 
@@ -66,10 +87,24 @@ class BackportCommand extends AbstractCommand
 		);
 
 		if ( $this->io->getOption('create') ) {
-			$this->createBackportsIssues($backportable_issues);
+			$this->createBackportsIssues($project_key, $backportable_issues);
 		}
 		else {
 			$this->showBackportableIssues($backportable_issues);
+		}
+	}
+
+	/**
+	 * Builds custom field map.
+	 *
+	 * @return void
+	 */
+	protected function buildCustomFieldsMap()
+	{
+		foreach ( $this->jiraApi->getFields() as $field_key => $field_data ) {
+			if ( substr($field_key, 0, 12) === 'customfield_' ) {
+				$this->customFieldsMap[$field_data['name']] = $field_key;
+			}
 		}
 	}
 
@@ -128,13 +163,115 @@ class BackportCommand extends AbstractCommand
 	/**
 	 * Creates backports issues.
 	 *
-	 * @param array $backportable_issues Backportable Issues.
+	 * @param string $project_key         Project key.
+	 * @param array  $backportable_issues Backportable Issues.
 	 *
 	 * @return void
+	 * @throws \LogicException When "Changelog Entry" issue type isn't found.
+	 * @throws CommandException When failed to create an issue.
 	 */
-	protected function createBackportsIssues(array $backportable_issues)
+	protected function createBackportsIssues($project_key, array $backportable_issues)
 	{
-		// TODO: Implement.
+		$issue_type_id = $this->getChangelogEntryIssueTypeId();
+
+		if ( !is_numeric($issue_type_id) ) {
+			throw new \LogicException('The "Changelog Entry" issue type not found.');
+		}
+
+		foreach ( $backportable_issues as $issue_pair ) {
+			/** @var Issue $issue */
+			$issue = $issue_pair[0];
+
+			/** @var Issue $backported_by_issue */
+			$backported_by_issue = $issue_pair[1];
+
+			$this->io->write('Processing "' . $issue->getKey() . '" issue ... ');
+
+			if ( is_object($backported_by_issue) ) {
+				$this->io->writeln('skipping [already has linked issue].');
+				continue;
+			}
+
+			$create_fields = array(
+				'description' => 'See ' . $issue->getKey() . '.',
+				'components' => array(),
+			);
+
+			foreach ( $this->copyCustomFields as $custom_field ) {
+				if ( isset($this->customFieldsMap[$custom_field]) ) {
+					$custom_field_id = $this->customFieldsMap[$custom_field];
+					$create_fields[$custom_field_id] = $this->getIssueCustomField($issue, $custom_field_id);
+				}
+			}
+
+			foreach ( $issue->get('components') as $component ) {
+				$create_fields['components'][] = array('id' => $component['id']);
+			}
+
+			$create_issue_result = $this->jiraApi->createIssue(
+				$project_key,
+				$issue->get('summary'),
+				$issue_type_id,
+				$create_fields
+			);
+
+			$raw_create_issue_result = $create_issue_result->getResult();
+
+			if ( array_key_exists('errors', $raw_create_issue_result) ) {
+				throw new CommandException(sprintf(
+					'Failed to create backported issue for "%s" issue. Errors: ' . PHP_EOL . '%s',
+					$issue->getKey(),
+					print_r($raw_create_issue_result['errors'], true)
+				));
+			}
+
+			$issue_link_result = $this->jiraApi->api(
+				Api::REQUEST_POST,
+				'/rest/api/2/issueLink',
+				array(
+					'type' => array('name' => self::ISSUE_LINK_NAME),
+					'inwardIssue' => array('key' => $raw_create_issue_result['key']),
+					'outwardIssue' => array('key' => $issue->getKey()),
+				)
+			);
+
+			$this->io->writeln('linked issue created.');
+		}
+	}
+
+	/**
+	 * Returns ID of "Changelog Entry" issue type.
+	 *
+	 * @return integer|null
+	 */
+	protected function getChangelogEntryIssueTypeId()
+	{
+		foreach ( $this->jiraApi->getIssueTypes() as $issue_type ) {
+			if ( $issue_type->getName() === 'Changelog Entry' ) {
+				return $issue_type->getId();
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Returns custom field value.
+	 *
+	 * @param Issue  $issue           Issue.
+	 * @param string $custom_field_id Custom field ID.
+	 *
+	 * @return mixed
+	 */
+	protected function getIssueCustomField(Issue $issue, $custom_field_id)
+	{
+		$custom_field_data = $issue->get($custom_field_id);
+
+		if ( is_array($custom_field_data) ) {
+			return array('value' => $custom_field_data['value']);
+		}
+
+		return $custom_field_data;
 	}
 
 	/**
@@ -146,10 +283,18 @@ class BackportCommand extends AbstractCommand
 	 */
 	protected function getBackportableIssues($project_key)
 	{
+		$needed_fields = array('summary', 'status', 'components', 'issuelinks');
+
+		foreach ( $this->copyCustomFields as $custom_field ) {
+			if ( isset($this->customFieldsMap[$custom_field]) ) {
+				$needed_fields[] = $this->customFieldsMap[$custom_field];
+			}
+		}
+
 		$walker = new Walker($this->jiraApi);
 		$walker->push(
 			'project = ' . $project_key . ' AND labels = backportable',
-			'summary,status,issuelinks'
+			implode(',', $needed_fields)
 		);
 
 		$ret = array();
@@ -184,7 +329,7 @@ class BackportCommand extends AbstractCommand
 	protected function getBackportedBy(Issue $issue)
 	{
 		foreach ( $issue->get('issuelinks') as $issue_link ) {
-			if ( $issue_link['type']['name'] !== 'Backports' ) {
+			if ( $issue_link['type']['name'] !== self::ISSUE_LINK_NAME ) {
 				continue;
 			}
 
