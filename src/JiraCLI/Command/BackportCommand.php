@@ -174,7 +174,13 @@ class BackportCommand extends AbstractCommand
 				continue;
 			}
 
-			$this->issueCloner->createLinkedIssue($issue, $project_key, self::ISSUE_LINK_NAME);
+			$components = array();
+
+			foreach ( $issue->get('components') as $component ) {
+				$components[] = $component['id'];
+			}
+
+			$this->issueCloner->createLinkedIssue($issue, $project_key, self::ISSUE_LINK_NAME, $components);
 
 			$this->io->writeln('linked issue created.');
 		}

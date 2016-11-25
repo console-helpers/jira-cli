@@ -152,14 +152,15 @@ class IssueCloner
 	/**
 	 * Creates backports issues.
 	 *
-	 * @param Issue  $issue       Issue.
-	 * @param string $project_key Project key.
-	 * @param string $link_name   Link name.
+	 * @param Issue  $issue         Issue.
+	 * @param string $project_key   Project key.
+	 * @param string $link_name     Link name.
+	 * @param array  $component_ids Component IDs.
 	 *
 	 * @return void
 	 * @throws \RuntimeException When failed to create an issue.
 	 */
-	public function createLinkedIssue(Issue $issue, $project_key, $link_name)
+	public function createLinkedIssue(Issue $issue, $project_key, $link_name, array $component_ids)
 	{
 		$create_fields = array(
 			'description' => 'See ' . $issue->getKey() . '.',
@@ -173,9 +174,8 @@ class IssueCloner
 			}
 		}
 
-		// TODO: Make this configurable externally.
-		foreach ( $issue->get('components') as $component ) {
-			$create_fields['components'][] = array('id' => $component['id']);
+		foreach ( $component_ids as $component_id ) {
+			$create_fields['components'][] = array('id' => $component_id);
 		}
 
 		$create_issue_result = $this->jiraApi->createIssue(
