@@ -12,8 +12,10 @@ namespace ConsoleHelpers\JiraCLI\Command;
 
 
 use chobie\Jira\Api;
+use chobie\Jira\Api\Result;
 use ConsoleHelpers\ConsoleKit\Config\ConfigEditor;
 use ConsoleHelpers\ConsoleKit\Command\AbstractCommand as BaseCommand;
+use Stecman\Component\Symfony\Console\BashCompletion\CompletionContext;
 
 /**
  * Base command class.
@@ -70,6 +72,46 @@ abstract class AbstractCommand extends BaseCommand
 	public function isValidIssueKey($issue_key)
 	{
 		return preg_match('/^([A-Z]+-[0-9]+)$/', $issue_key);
+	}
+
+	/**
+	 * Return possible values for the named argument
+	 *
+	 * @param string            $argumentName Argument name.
+	 * @param CompletionContext $context      Completion context.
+	 *
+	 * @return array
+	 */
+	public function completeArgumentValues($argumentName, CompletionContext $context)
+	{
+		$ret = parent::completeArgumentValues($argumentName, $context);
+
+		if ( $argumentName === 'project_key' ) {
+			return $this->getProjectKeys();
+		}
+
+		return $ret;
+	}
+
+	/**
+	 * Returns possible link names.
+	 *
+	 * @return array
+	 */
+	protected function getProjectKeys()
+	{
+		$ret = array();
+		$response = $this->jiraApi->getProjects();
+
+		if ( $response instanceof Result ) {
+			$response = $response->getResult();
+		}
+
+		foreach ( $response as $project_data ) {
+			$ret[] = $project_data['key'];
+		}
+
+		return $ret;
 	}
 
 }

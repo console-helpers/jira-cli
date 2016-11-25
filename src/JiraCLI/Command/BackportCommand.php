@@ -76,9 +76,14 @@ class BackportCommand extends AbstractCommand
 	{
 		$project_key = $this->io->getArgument('project_key');
 
+		if ( !in_array($project_key, $this->getProjectKeys()) ) {
+			throw new CommandException('The project with "' . $project_key . '" key does\'t exist.');
+		}
+
 		$issues = $this->issueCloner->getIssues(
 			'project = ' . $project_key . ' AND labels = backportable',
-			self::ISSUE_LINK_NAME
+			self::ISSUE_LINK_NAME,
+			BackportableIssueCloner::LINK_DIRECTION_INWARD
 		);
 		$issue_count = count($issues);
 
@@ -164,13 +169,15 @@ class BackportCommand extends AbstractCommand
 			/** @var Issue $issue */
 			$issue = $issue_pair[0];
 
-			/** @var Issue $backported_by_issue */
-			$backported_by_issue = $issue_pair[1];
+			/** @var Issue $linked_issue */
+			$linked_issue = $issue_pair[1];
 
-			$this->io->write('Processing "' . $issue->getKey() . '" issue ... ');
+			$this->io->write('Processing "<info>' . $issue->getKey() . '</info>" issue ... ');
 
-			if ( is_object($backported_by_issue) ) {
-				$this->io->writeln('skipping [already has linked issue].');
+			if ( is_object($linked_issue) ) {
+				$this->io->writeln(
+					'linked issue "<info>' . $linked_issue->getKey() . '</info>" already exists.'
+				);
 				continue;
 			}
 
@@ -180,9 +187,15 @@ class BackportCommand extends AbstractCommand
 				$components[] = $component['id'];
 			}
 
-			$this->issueCloner->createLinkedIssue($issue, $project_key, self::ISSUE_LINK_NAME, $components);
+			$linked_issue_key = $this->issueCloner->createLinkedIssue(
+				$issue,
+				$project_key,
+				self::ISSUE_LINK_NAME,
+				BackportableIssueCloner::LINK_DIRECTION_INWARD,
+				$components
+			);
 
-			$this->io->writeln('linked issue created.');
+			$this->io->writeln('linked issue "<info>' . $linked_issue_key . '</info>" created.');
 		}
 	}
 
