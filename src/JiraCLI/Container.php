@@ -15,6 +15,7 @@ use chobie\Jira\Api;
 use chobie\Jira\Api\Authentication\Basic;
 use ConsoleHelpers\ConsoleKit\Config\ConfigEditor;
 use ConsoleHelpers\JiraCLI\Issue\BackportableIssueCloner;
+use ConsoleHelpers\JiraCLI\Issue\ChangeLogIssueCloner;
 
 class Container extends \ConsoleHelpers\ConsoleKit\Container
 {
@@ -54,6 +55,10 @@ class Container extends \ConsoleHelpers\ConsoleKit\Container
 
 		$this['backportable_issue_cloner'] = function ($c) {
 			return new BackportableIssueCloner($c['jira_api']);
+		};
+
+		$this['changelog_issue_cloner'] = function ($c) {
+			return new ChangeLogIssueCloner($c['jira_api']);
 		};
 	}
 

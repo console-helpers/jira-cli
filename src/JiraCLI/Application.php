@@ -12,6 +12,7 @@ namespace ConsoleHelpers\JiraCLI;
 
 
 use ConsoleHelpers\JiraCLI\Command\BackportCommand;
+use ConsoleHelpers\JiraCLI\Command\ChangeLogCloneCommand;
 use ConsoleHelpers\JiraCLI\Command\DownloadAttachmentCommand;
 use ConsoleHelpers\ConsoleKit\Application as BaseApplication;
 use ConsoleHelpers\JiraCLI\Command\VersionsCommand;
@@ -31,6 +32,7 @@ class Application extends BaseApplication
 		$default_commands[] = new DownloadAttachmentCommand();
 		$default_commands[] = new VersionsCommand();
 		$default_commands[] = new BackportCommand();
+		$default_commands[] = new ChangeLogCloneCommand();
 
 		return $default_commands;
 	}
