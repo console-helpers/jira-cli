@@ -11,10 +11,9 @@
 namespace ConsoleHelpers\JiraCLI\Command;
 
 
-use chobie\Jira\Api;
 use chobie\Jira\Issue;
-use chobie\Jira\Issues\Walker;
 use ConsoleHelpers\ConsoleKit\Exception\CommandException;
+use ConsoleHelpers\JiraCLI\Issue\BackportableIssueCloner;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -27,20 +26,11 @@ class BackportCommand extends AbstractCommand
 	const ISSUE_LINK_NAME = 'Backports';
 
 	/**
-	 * Specifies custom fields to copy during backporting.
+	 * Issue cloner.
 	 *
-	 * @var array
+	 * @var BackportableIssueCloner
 	 */
-	protected $copyCustomFields = array(
-		'Change Log Group', 'Change Log Message',
-	);
-
-	/**
-	 * Custom fields map.
-	 *
-	 * @var array
-	 */
-	protected $customFieldsMap = array();
+	protected $issueCloner;
 
 	/**
 	 * {@inheritdoc}
@@ -64,19 +54,33 @@ class BackportCommand extends AbstractCommand
 	}
 
 	/**
+	 * Prepare dependencies.
+	 *
+	 * @return void
+	 */
+	protected function prepareDependencies()
+	{
+		parent::prepareDependencies();
+
+		$container = $this->getContainer();
+
+		$this->issueCloner = $container['backportable_issue_cloner'];
+	}
+
+	/**
 	 * {@inheritdoc}
 	 *
 	 * @throws CommandException When no backportable issues were found.
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-		$this->buildCustomFieldsMap();
-
-		$this->jiraApi->setOptions(0); // Don't expand fields.
 		$project_key = $this->io->getArgument('project_key');
 
-		$backportable_issues = $this->getBackportableIssues($project_key);
-		$issue_count = count($backportable_issues);
+		$issues = $this->issueCloner->getIssues(
+			'project = ' . $project_key . ' AND labels = backportable',
+			self::ISSUE_LINK_NAME
+		);
+		$issue_count = count($issues);
 
 		if ( !$issue_count ) {
 			throw new CommandException('No backportable issues found.');
@@ -87,46 +91,32 @@ class BackportCommand extends AbstractCommand
 		);
 
 		if ( $this->io->getOption('create') ) {
-			$this->createBackportsIssues($project_key, $backportable_issues);
+			$this->createBackportsIssues($project_key, $issues);
 		}
 		else {
-			$this->showBackportableIssues($backportable_issues);
-		}
-	}
-
-	/**
-	 * Builds custom field map.
-	 *
-	 * @return void
-	 */
-	protected function buildCustomFieldsMap()
-	{
-		foreach ( $this->jiraApi->getFields() as $field_key => $field_data ) {
-			if ( substr($field_key, 0, 12) === 'customfield_' ) {
-				$this->customFieldsMap[$field_data['name']] = $field_key;
-			}
+			$this->showBackportableIssues($issues);
 		}
 	}
 
 	/**
 	 * Shows backportable issues.
 	 *
-	 * @param array $backportable_issues Backportable Issues.
+	 * @param array $issues Backportable Issues.
 	 *
 	 * @return void
 	 */
-	protected function showBackportableIssues(array $backportable_issues)
+	protected function showBackportableIssues(array $issues)
 	{
 		$table = new Table($this->io->getOutput());
 
-		foreach ( $backportable_issues as $issue_pair ) {
+		foreach ( $issues as $issue_pair ) {
 			/** @var Issue $issue */
 			$issue = $issue_pair[0];
 
 			/** @var Issue $backported_by_issue */
 			$backported_by_issue = $issue_pair[1];
 
-			$issue_status = $this->getIssueStatusName($issue);
+			$issue_status = $this->issueCloner->getIssueStatusName($issue);
 			$row_data = array(
 				$issue->getKey(),
 				$issue->get('summary'),
@@ -134,7 +124,7 @@ class BackportCommand extends AbstractCommand
 			);
 
 			if ( is_object($backported_by_issue) ) {
-				$backported_by_issue_status = $this->getIssueStatusName($backported_by_issue);
+				$backported_by_issue_status = $this->issueCloner->getIssueStatusName($backported_by_issue);
 				$row_data[] = $backported_by_issue->getKey();
 				$row_data[] = $backported_by_issue->get('summary');
 				$row_data[] = $backported_by_issue_status;
@@ -163,22 +153,14 @@ class BackportCommand extends AbstractCommand
 	/**
 	 * Creates backports issues.
 	 *
-	 * @param string $project_key         Project key.
-	 * @param array  $backportable_issues Backportable Issues.
+	 * @param string $project_key Project key.
+	 * @param array  $issue_pairs Backportable Issues.
 	 *
 	 * @return void
-	 * @throws \LogicException When "Changelog Entry" issue type isn't found.
-	 * @throws CommandException When failed to create an issue.
 	 */
-	protected function createBackportsIssues($project_key, array $backportable_issues)
+	protected function createBackportsIssues($project_key, array $issue_pairs)
 	{
-		$issue_type_id = $this->getChangelogEntryIssueTypeId();
-
-		if ( !is_numeric($issue_type_id) ) {
-			throw new \LogicException('The "Changelog Entry" issue type not found.');
-		}
-
-		foreach ( $backportable_issues as $issue_pair ) {
+		foreach ( $issue_pairs as $issue_pair ) {
 			/** @var Issue $issue */
 			$issue = $issue_pair[0];
 
@@ -192,167 +174,10 @@ class BackportCommand extends AbstractCommand
 				continue;
 			}
 
-			$create_fields = array(
-				'description' => 'See ' . $issue->getKey() . '.',
-				'components' => array(),
-			);
-
-			foreach ( $this->copyCustomFields as $custom_field ) {
-				if ( isset($this->customFieldsMap[$custom_field]) ) {
-					$custom_field_id = $this->customFieldsMap[$custom_field];
-					$create_fields[$custom_field_id] = $this->getIssueCustomField($issue, $custom_field_id);
-				}
-			}
-
-			foreach ( $issue->get('components') as $component ) {
-				$create_fields['components'][] = array('id' => $component['id']);
-			}
-
-			$create_issue_result = $this->jiraApi->createIssue(
-				$project_key,
-				$issue->get('summary'),
-				$issue_type_id,
-				$create_fields
-			);
-
-			$raw_create_issue_result = $create_issue_result->getResult();
-
-			if ( array_key_exists('errors', $raw_create_issue_result) ) {
-				throw new CommandException(sprintf(
-					'Failed to create backported issue for "%s" issue. Errors: ' . PHP_EOL . '%s',
-					$issue->getKey(),
-					print_r($raw_create_issue_result['errors'], true)
-				));
-			}
-
-			$issue_link_result = $this->jiraApi->api(
-				Api::REQUEST_POST,
-				'/rest/api/2/issueLink',
-				array(
-					'type' => array('name' => self::ISSUE_LINK_NAME),
-					'inwardIssue' => array('key' => $raw_create_issue_result['key']),
-					'outwardIssue' => array('key' => $issue->getKey()),
-				)
-			);
+			$this->issueCloner->createLinkedIssue($issue, $project_key, self::ISSUE_LINK_NAME);
 
 			$this->io->writeln('linked issue created.');
 		}
-	}
-
-	/**
-	 * Returns ID of "Changelog Entry" issue type.
-	 *
-	 * @return integer|null
-	 */
-	protected function getChangelogEntryIssueTypeId()
-	{
-		foreach ( $this->jiraApi->getIssueTypes() as $issue_type ) {
-			if ( $issue_type->getName() === 'Changelog Entry' ) {
-				return $issue_type->getId();
-			}
-		}
-
-		return null;
-	}
-
-	/**
-	 * Returns custom field value.
-	 *
-	 * @param Issue  $issue           Issue.
-	 * @param string $custom_field_id Custom field ID.
-	 *
-	 * @return mixed
-	 */
-	protected function getIssueCustomField(Issue $issue, $custom_field_id)
-	{
-		$custom_field_data = $issue->get($custom_field_id);
-
-		if ( is_array($custom_field_data) ) {
-			return array('value' => $custom_field_data['value']);
-		}
-
-		return $custom_field_data;
-	}
-
-	/**
-	 * Returns backportable issues.
-	 *
-	 * @param string $project_key Project key.
-	 *
-	 * @return array
-	 */
-	protected function getBackportableIssues($project_key)
-	{
-		$needed_fields = array('summary', 'status', 'components', 'issuelinks');
-
-		foreach ( $this->copyCustomFields as $custom_field ) {
-			if ( isset($this->customFieldsMap[$custom_field]) ) {
-				$needed_fields[] = $this->customFieldsMap[$custom_field];
-			}
-		}
-
-		$walker = new Walker($this->jiraApi);
-		$walker->push(
-			'project = ' . $project_key . ' AND labels = backportable',
-			implode(',', $needed_fields)
-		);
-
-		$ret = array();
-
-		foreach ( $walker as $issue ) {
-			$backported_by_issue = $this->getBackportedBy($issue);
-
-			$issue_status = $this->getIssueStatusName($issue);
-
-			if ( is_object($backported_by_issue) ) {
-				$backported_by_issue_status = $this->getIssueStatusName($backported_by_issue);
-
-				// Exclude already processed issues.
-				if ( $issue_status === 'Resolved' && $backported_by_issue_status === 'Resolved' ) {
-					continue;
-				}
-			}
-
-			$ret[] = array($issue, $backported_by_issue);
-		}
-
-		return $ret;
-	}
-
-	/**
-	 * Returns issue, which backports given issue.
-	 *
-	 * @param Issue $issue Issue.
-	 *
-	 * @return Issue|null
-	 */
-	protected function getBackportedBy(Issue $issue)
-	{
-		foreach ( $issue->get('issuelinks') as $issue_link ) {
-			if ( $issue_link['type']['name'] !== self::ISSUE_LINK_NAME ) {
-				continue;
-			}
-
-			if ( array_key_exists('inwardIssue', $issue_link) ) {
-				return new Issue($issue_link['inwardIssue']);
-			}
-		}
-
-		return null;
-	}
-
-	/**
-	 * Returns issue status name.
-	 *
-	 * @param Issue $issue Issue.
-	 *
-	 * @return string
-	 */
-	protected function getIssueStatusName(Issue $issue)
-	{
-		$status = $issue->get('status');
-
-		return $status['name'];
 	}
 
 }
