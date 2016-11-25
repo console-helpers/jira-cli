@@ -18,6 +18,10 @@ use chobie\Jira\Issues\Walker;
 class IssueCloner
 {
 
+	const LINK_DIRECTION_INWARD = 1;
+
+	const LINK_DIRECTION_OUTWARD = 2;
+
 	/**
 	 * Jira REST client.
 	 *
@@ -63,12 +67,13 @@ class IssueCloner
 	/**
 	 * Returns issues.
 	 *
-	 * @param string $jql       JQL.
-	 * @param string $link_name Link name.
+	 * @param string  $jql            JQL.
+	 * @param string  $link_name      Link name.
+	 * @param integer $link_direction Link direction.
 	 *
 	 * @return array
 	 */
-	public function getIssues($jql, $link_name)
+	public function getIssues($jql, $link_name, $link_direction)
 	{
 		$this->_buildCustomFieldsMap();
 
@@ -78,7 +83,7 @@ class IssueCloner
 		$ret = array();
 
 		foreach ( $walker as $issue ) {
-			$linked_issue = $this->_getLinkedIssue($issue, $link_name);
+			$linked_issue = $this->_getLinkedIssue($issue, $link_name, $link_direction);
 
 			if ( is_object($linked_issue) && $this->isAlreadyProcessed($issue, $linked_issue) ) {
 				continue;
@@ -125,20 +130,32 @@ class IssueCloner
 	/**
 	 * Returns issue, which backports given issue.
 	 *
-	 * @param Issue  $issue     Issue.
-	 * @param string $link_name Link name.
+	 * @param Issue   $issue          Issue.
+	 * @param string  $link_name      Link name.
+	 * @param integer $link_direction Link direction.
 	 *
 	 * @return Issue|null
+	 * @throws \InvalidArgumentException When link direction isn't valid.
 	 */
-	private function _getLinkedIssue(Issue $issue, $link_name)
+	private function _getLinkedIssue(Issue $issue, $link_name, $link_direction)
 	{
 		foreach ( $issue->get('issuelinks') as $issue_link ) {
 			if ( $issue_link['type']['name'] !== $link_name ) {
 				continue;
 			}
 
-			if ( array_key_exists('inwardIssue', $issue_link) ) {
-				$linked_issue = new Issue($issue_link['inwardIssue']);
+			if ( $link_direction === self::LINK_DIRECTION_INWARD ) {
+				$check_key = 'inwardIssue';
+			}
+			elseif ( $link_direction === self::LINK_DIRECTION_OUTWARD ) {
+				$check_key = 'outwardIssue';
+			}
+			else {
+				throw new \InvalidArgumentException('The "' . $link_direction . '" link direction isn\'t valid.');
+			}
+
+			if ( array_key_exists($check_key, $issue_link) ) {
+				$linked_issue = new Issue($issue_link[$check_key]);
 
 				if ( $this->isLinkAccepted($issue, $linked_issue) ) {
 					return $linked_issue;
@@ -152,15 +169,17 @@ class IssueCloner
 	/**
 	 * Creates backports issues.
 	 *
-	 * @param Issue  $issue         Issue.
-	 * @param string $project_key   Project key.
-	 * @param string $link_name     Link name.
-	 * @param array  $component_ids Component IDs.
+	 * @param Issue   $issue          Issue.
+	 * @param string  $project_key    Project key.
+	 * @param string  $link_name      Link name.
+	 * @param integer $link_direction Link direction.
+	 * @param array   $component_ids  Component IDs.
 	 *
-	 * @return void
+	 * @return string
 	 * @throws \RuntimeException When failed to create an issue.
+	 * @throws \InvalidArgumentException When link direction isn't valid.
 	 */
-	public function createLinkedIssue(Issue $issue, $project_key, $link_name, array $component_ids)
+	public function createLinkedIssue(Issue $issue, $project_key, $link_name, $link_direction, array $component_ids)
 	{
 		$create_fields = array(
 			'description' => 'See ' . $issue->getKey() . '.',
@@ -175,7 +194,7 @@ class IssueCloner
 		}
 
 		foreach ( $component_ids as $component_id ) {
-			$create_fields['components'][] = array('id' => $component_id);
+			$create_fields['components'][] = array('id' => (string)$component_id);
 		}
 
 		$create_issue_result = $this->jiraApi->createIssue(
@@ -195,15 +214,33 @@ class IssueCloner
 			));
 		}
 
-		$issue_link_result = $this->jiraApi->api(
-			Api::REQUEST_POST,
-			'/rest/api/2/issueLink',
-			array(
-				'type' => array('name' => $link_name),
-				'inwardIssue' => array('key' => $raw_create_issue_result['key']),
-				'outwardIssue' => array('key' => $issue->getKey()),
-			)
-		);
+		if ( $link_direction === self::LINK_DIRECTION_INWARD ) {
+			$issue_link_result = $this->jiraApi->api(
+				Api::REQUEST_POST,
+				'/rest/api/2/issueLink',
+				array(
+					'type' => array('name' => $link_name),
+					'inwardIssue' => array('key' => $raw_create_issue_result['key']),
+					'outwardIssue' => array('key' => $issue->getKey()),
+				)
+			);
+		}
+		elseif ( $link_direction === self::LINK_DIRECTION_OUTWARD ) {
+			$issue_link_result = $this->jiraApi->api(
+				Api::REQUEST_POST,
+				'/rest/api/2/issueLink',
+				array(
+					'type' => array('name' => $link_name),
+					'inwardIssue' => array('key' => $issue->getKey()),
+					'outwardIssue' => array('key' => $raw_create_issue_result['key']),
+				)
+			);
+		}
+		else {
+			throw new \InvalidArgumentException('The "' . $link_direction . '" link direction isn\'t valid.');
+		}
+
+		return $raw_create_issue_result['key'];
 	}
 
 	/**
@@ -216,7 +253,7 @@ class IssueCloner
 	 */
 	protected function isAlreadyProcessed(Issue $issue, Issue $linked_issue)
 	{
-		return true;
+		return false;
 	}
 
 	/**
