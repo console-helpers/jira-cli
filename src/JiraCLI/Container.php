@@ -14,6 +14,7 @@ namespace ConsoleHelpers\JiraCLI;
 use chobie\Jira\Api;
 use chobie\Jira\Api\Authentication\Basic;
 use ConsoleHelpers\ConsoleKit\Config\ConfigEditor;
+use ConsoleHelpers\JiraCLI\Cache\CacheFactory;
 use ConsoleHelpers\JiraCLI\Issue\BackportableIssueCloner;
 use ConsoleHelpers\JiraCLI\Issue\ChangeLogIssueCloner;
 
@@ -36,7 +37,18 @@ class Container extends \ConsoleHelpers\ConsoleKit\Container
 			'jira.url' => '',
 			'jira.username' => '',
 			'jira.password' => '',
+			'cache.provider' => '',
 		);
+
+		$this['cache'] = function ($c) {
+			/** @var ConfigEditor $config_editor */
+			$config_editor = $c['config_editor'];
+			$cache_provider = $config_editor->get('cache.provider');
+
+			$cache_factory = new CacheFactory('jira_url:' . $config_editor->get('jira.url'));
+
+			return $cache_factory->create('chain', array('array', $cache_provider));
+		};
 
 		$this['jira_api'] = function ($c) {
 			/** @var ConfigEditor $config_editor */

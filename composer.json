@@ -9,8 +9,9 @@
 		}
 	],
 	"require": {
-		"console-helpers/console-kit": "^0.0.1",
-		"chobie/jira-api-restclient": "^2.0@dev"
+		"console-helpers/console-kit": "^0.1@dev",
+		"chobie/jira-api-restclient": "^2.0@dev",
+		"doctrine/cache": "^1.5"
 	},
 	"require-dev": {
 		"aik099/coding-standard": "dev-master"
