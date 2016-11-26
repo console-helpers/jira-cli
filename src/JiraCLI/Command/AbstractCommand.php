@@ -15,6 +15,7 @@ use chobie\Jira\Api;
 use chobie\Jira\Api\Result;
 use ConsoleHelpers\ConsoleKit\Config\ConfigEditor;
 use ConsoleHelpers\ConsoleKit\Command\AbstractCommand as BaseCommand;
+use Doctrine\Common\Cache\CacheProvider;
 use Stecman\Component\Symfony\Console\BashCompletion\CompletionContext;
 
 /**
@@ -38,6 +39,13 @@ abstract class AbstractCommand extends BaseCommand
 	protected $jiraApi;
 
 	/**
+	 * Cache.
+	 *
+	 * @var CacheProvider
+	 */
+	protected $cache;
+
+	/**
 	 * Prepare dependencies.
 	 *
 	 * @return void
@@ -48,6 +56,7 @@ abstract class AbstractCommand extends BaseCommand
 
 		$this->_configEditor = $container['config_editor'];
 		$this->jiraApi = $container['jira_api'];
+		$this->cache = $container['cache'];
 	}
 
 	/**
@@ -100,18 +109,25 @@ abstract class AbstractCommand extends BaseCommand
 	 */
 	protected function getProjectKeys()
 	{
-		$ret = array();
-		$response = $this->jiraApi->getProjects();
+		$cache_key = 'projects';
+		$cached_value = $this->cache->fetch($cache_key);
 
-		if ( $response instanceof Result ) {
-			$response = $response->getResult();
+		if ( $cached_value === false ) {
+			$cached_value = array();
+			$response = $this->jiraApi->getProjects();
+
+			if ( $response instanceof Result ) {
+				$response = $response->getResult();
+			}
+
+			foreach ( $response as $project_data ) {
+				$cached_value[] = $project_data['key'];
+			}
+
+			$this->cache->save($cache_key, $cached_value);
 		}
 
-		foreach ( $response as $project_data ) {
-			$ret[] = $project_data['key'];
-		}
-
-		return $ret;
+		return $cached_value;
 	}
 
 }
