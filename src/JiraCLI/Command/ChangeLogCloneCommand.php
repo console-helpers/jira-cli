@@ -98,14 +98,21 @@ class ChangeLogCloneCommand extends AbstractCommand
 	 */
 	protected function getLinkNames()
 	{
-		$ret = array();
-		$response = $this->jiraApi->api(Api::REQUEST_GET, '/rest/api/2/issueLinkType', array(), true);
+		$cache_key = 'issue_link_types';
+		$cached_value = $this->cache->fetch($cache_key);
 
-		foreach ( $response['issueLinkTypes'] as $link_type_data ) {
-			$ret[] = $link_type_data['name'];
+		if ( $cached_value === false ) {
+			$cached_value = array();
+			$response = $this->jiraApi->api(Api::REQUEST_GET, '/rest/api/2/issueLinkType', array(), true);
+
+			foreach ( $response['issueLinkTypes'] as $link_type_data ) {
+				$cached_value[] = $link_type_data['name'];
+			}
+
+			$this->cache->save($cache_key, $cached_value);
 		}
 
-		return $ret;
+		return $cached_value;
 	}
 
 	/**
@@ -201,14 +208,21 @@ class ChangeLogCloneCommand extends AbstractCommand
 	 */
 	protected function getProjectComponents($project_key)
 	{
-		$ret = array();
-		$project_components = $this->jiraApi->getProjectComponents($project_key);
+		$cache_key = 'project_components[' . $project_key . ']';
+		$cached_value = $this->cache->fetch($cache_key);
 
-		foreach ( $project_components as $project_component_data ) {
-			$ret[$project_component_data['id']] = $project_component_data['name'];
+		if ( $cached_value === false ) {
+			$cached_value = array();
+			$project_components = $this->jiraApi->getProjectComponents($project_key);
+
+			foreach ( $project_components as $project_component_data ) {
+				$cached_value[$project_component_data['id']] = $project_component_data['name'];
+			}
+
+			$this->cache->save($cache_key, $cached_value, 2592000); // Cache for 1 month.
 		}
 
-		return $ret;
+		return $cached_value;
 	}
 
 }
