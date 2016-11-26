@@ -83,7 +83,8 @@ class BackportCommand extends AbstractCommand
 		$issues = $this->issueCloner->getIssues(
 			'project = ' . $project_key . ' AND labels = backportable',
 			self::ISSUE_LINK_NAME,
-			BackportableIssueCloner::LINK_DIRECTION_INWARD
+			BackportableIssueCloner::LINK_DIRECTION_INWARD,
+			$project_key
 		);
 		$issue_count = count($issues);
 

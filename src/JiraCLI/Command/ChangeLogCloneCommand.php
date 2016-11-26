@@ -131,7 +131,8 @@ class ChangeLogCloneCommand extends AbstractCommand
 		$issues = $this->issueCloner->getIssues(
 			'key = ' . $issue_key,
 			$link_name,
-			ChangeLogIssueCloner::LINK_DIRECTION_OUTWARD
+			ChangeLogIssueCloner::LINK_DIRECTION_OUTWARD,
+			$project_key
 		);
 		$issue_count = count($issues);
 

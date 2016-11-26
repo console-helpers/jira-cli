@@ -67,13 +67,14 @@ class IssueCloner
 	/**
 	 * Returns issues.
 	 *
-	 * @param string  $jql            JQL.
-	 * @param string  $link_name      Link name.
-	 * @param integer $link_direction Link direction.
+	 * @param string  $jql              JQL.
+	 * @param string  $link_name        Link name.
+	 * @param integer $link_direction   Link direction.
+	 * @param string  $link_project_key Link project key.
 	 *
 	 * @return array
 	 */
-	public function getIssues($jql, $link_name, $link_direction)
+	public function getIssues($jql, $link_name, $link_direction, $link_project_key)
 	{
 		$this->_buildCustomFieldsMap();
 
@@ -83,7 +84,7 @@ class IssueCloner
 		$ret = array();
 
 		foreach ( $walker as $issue ) {
-			$linked_issue = $this->_getLinkedIssue($issue, $link_name, $link_direction);
+			$linked_issue = $this->_getLinkedIssue($issue, $link_name, $link_direction, $link_project_key);
 
 			if ( is_object($linked_issue) && $this->isAlreadyProcessed($issue, $linked_issue) ) {
 				continue;
@@ -130,14 +131,15 @@ class IssueCloner
 	/**
 	 * Returns issue, which backports given issue.
 	 *
-	 * @param Issue   $issue          Issue.
-	 * @param string  $link_name      Link name.
-	 * @param integer $link_direction Link direction.
+	 * @param Issue   $issue            Issue.
+	 * @param string  $link_name        Link name.
+	 * @param integer $link_direction   Link direction.
+	 * @param string  $link_project_key Link project key.
 	 *
 	 * @return Issue|null
 	 * @throws \InvalidArgumentException When link direction isn't valid.
 	 */
-	private function _getLinkedIssue(Issue $issue, $link_name, $link_direction)
+	private function _getLinkedIssue(Issue $issue, $link_name, $link_direction, $link_project_key)
 	{
 		foreach ( $issue->get('issuelinks') as $issue_link ) {
 			if ( $issue_link['type']['name'] !== $link_name ) {
@@ -156,8 +158,11 @@ class IssueCloner
 
 			if ( array_key_exists($check_key, $issue_link) ) {
 				$linked_issue = new Issue($issue_link[$check_key]);
+				$linked_issue_data = $this->jiraApi->getIssue($linked_issue->getKey(), 'project')->getResult();
 
-				if ( $this->isLinkAccepted($issue, $linked_issue) ) {
+				if ( $this->isLinkAccepted($issue, $linked_issue)
+					&& $linked_issue_data['fields']['project']['key'] === $link_project_key
+				) {
 					return $linked_issue;
 				}
 			}
