@@ -35,14 +35,12 @@ class VersionsCommand extends AbstractCommand
 		$versions = array();
 
 		$this->io->write('Getting projects ... ');
-		$projects = $this->jiraApi->getProjects()->getResult();
-		$this->io->writeln('done (' . count($projects) . ' found)');
+		$project_keys = $this->getProjectKeys();
+		$this->io->writeln('done (' . count($project_keys) . ' found)');
 
-		foreach ( $projects as $index => $project_data ) {
-			$project_key = $project_data['key'];
-
-			$this->io->write('Getting project <info>#' . $index . '</info> versions ... ');
-			$project_versions = $this->jiraApi->getVersions($project_key);
+		foreach ( $project_keys as $project_key ) {
+			$this->io->write('Getting project <info>' . $project_key . '</info> versions ... ');
+			$project_versions = $this->getProjectVersionsRaw($project_key);
 			$this->io->writeln('done (' . count($project_versions) . ' found)');
 
 			foreach ( $project_versions as $project_version_data ) {
@@ -63,6 +61,26 @@ class VersionsCommand extends AbstractCommand
 		foreach ( $versions as $version ) {
 			$this->io->writeln(' * ' . $version);
 		}
+	}
+
+	/**
+	 * Returns raw project versions.
+	 *
+	 * @param string $project_key Project key.
+	 *
+	 * @return array
+	 */
+	protected function getProjectVersionsRaw($project_key)
+	{
+		$cache_key = 'project_versions_raw[' . $project_key . ']';
+		$cached_value = $this->cache->fetch($cache_key);
+
+		if ( $cached_value === false ) {
+			$cached_value = $this->jiraApi->getVersions($project_key);
+			$this->cache->save($cache_key, $cached_value, 2592000); // Cache for 1 month.
+		}
+
+		return $cached_value;
 	}
 
 }
