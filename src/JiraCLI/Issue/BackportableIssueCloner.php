@@ -11,8 +11,8 @@
 namespace ConsoleHelpers\JiraCLI\Issue;
 
 
-use chobie\Jira\Api;
 use chobie\Jira\Issue;
+use ConsoleHelpers\JiraCLI\JiraApi;
 
 class BackportableIssueCloner extends IssueCloner
 {
@@ -20,9 +20,9 @@ class BackportableIssueCloner extends IssueCloner
 	/**
 	 * IssueCloner constructor.
 	 *
-	 * @param Api $jira_api Jira REST client.
+	 * @param JiraApi $jira_api Jira REST client.
 	 */
-	public function __construct(Api $jira_api)
+	public function __construct(JiraApi $jira_api)
 	{
 		parent::__construct($jira_api);
 

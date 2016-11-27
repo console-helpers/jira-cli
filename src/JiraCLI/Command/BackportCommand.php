@@ -76,7 +76,7 @@ class BackportCommand extends AbstractCommand
 	{
 		$project_key = $this->io->getArgument('project_key');
 
-		if ( !in_array($project_key, $this->getProjectKeys()) ) {
+		if ( !in_array($project_key, $this->jiraApi->getProjectKeys()) ) {
 			throw new CommandException('The project with "' . $project_key . '" key does\'t exist.');
 		}
 

@@ -11,9 +11,9 @@
 namespace ConsoleHelpers\JiraCLI\Issue;
 
 
-use chobie\Jira\Api;
 use chobie\Jira\Issue;
 use chobie\Jira\Issues\Walker;
+use ConsoleHelpers\JiraCLI\JiraApi;
 
 class IssueCloner
 {
@@ -25,7 +25,7 @@ class IssueCloner
 	/**
 	 * Jira REST client.
 	 *
-	 * @var Api
+	 * @var JiraApi
 	 */
 	protected $jiraApi;
 
@@ -55,9 +55,9 @@ class IssueCloner
 	/**
 	 * IssueCloner constructor.
 	 *
-	 * @param Api $jira_api Jira REST client.
+	 * @param JiraApi $jira_api Jira REST client.
 	 */
-	public function __construct(Api $jira_api)
+	public function __construct(JiraApi $jira_api)
 	{
 		$this->jiraApi = $jira_api;
 
@@ -221,7 +221,7 @@ class IssueCloner
 
 		if ( $link_direction === self::LINK_DIRECTION_INWARD ) {
 			$issue_link_result = $this->jiraApi->api(
-				Api::REQUEST_POST,
+				JiraApi::REQUEST_POST,
 				'/rest/api/2/issueLink',
 				array(
 					'type' => array('name' => $link_name),
@@ -232,7 +232,7 @@ class IssueCloner
 		}
 		elseif ( $link_direction === self::LINK_DIRECTION_OUTWARD ) {
 			$issue_link_result = $this->jiraApi->api(
-				Api::REQUEST_POST,
+				JiraApi::REQUEST_POST,
 				'/rest/api/2/issueLink',
 				array(
 					'type' => array('name' => $link_name),

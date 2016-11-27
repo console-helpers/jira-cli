@@ -11,7 +11,6 @@
 namespace ConsoleHelpers\JiraCLI;
 
 
-use chobie\Jira\Api;
 use chobie\Jira\Api\Authentication\Basic;
 use ConsoleHelpers\ConsoleKit\Config\ConfigEditor;
 use ConsoleHelpers\JiraCLI\Cache\CacheFactory;
@@ -59,10 +58,10 @@ class Container extends \ConsoleHelpers\ConsoleKit\Container
 				$config_editor->get('jira.password')
 			);
 
-			return new Api(
-				$config_editor->get('jira.url'),
-				$authentication
-			);
+			$api = new JiraApi($config_editor->get('jira.url'), $authentication);
+			$api->setCache($c['cache']);
+
+			return $api;
 		};
 
 		$this['backportable_issue_cloner'] = function ($c) {

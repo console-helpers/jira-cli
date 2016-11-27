@@ -11,10 +11,10 @@
 namespace ConsoleHelpers\JiraCLI\Command;
 
 
-use chobie\Jira\Api;
 use chobie\Jira\Issue;
 use ConsoleHelpers\ConsoleKit\Exception\CommandException;
 use ConsoleHelpers\JiraCLI\Issue\ChangeLogIssueCloner;
+use ConsoleHelpers\JiraCLI\JiraApi;
 use Stecman\Component\Symfony\Console\BashCompletion\CompletionContext;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -85,34 +85,10 @@ class ChangeLogCloneCommand extends AbstractCommand
 		$ret = parent::completeOptionValues($optionName, $context);
 
 		if ( $optionName === 'link-name' ) {
-			return $this->getLinkNames();
+			return $this->jiraApi->getIssueLinkTypeNames();
 		}
 
 		return $ret;
-	}
-
-	/**
-	 * Returns possible link names.
-	 *
-	 * @return array
-	 */
-	protected function getLinkNames()
-	{
-		$cache_key = 'issue_link_types';
-		$cached_value = $this->cache->fetch($cache_key);
-
-		if ( $cached_value === false ) {
-			$cached_value = array();
-			$response = $this->jiraApi->api(Api::REQUEST_GET, '/rest/api/2/issueLinkType', array(), true);
-
-			foreach ( $response['issueLinkTypes'] as $link_type_data ) {
-				$cached_value[] = $link_type_data['name'];
-			}
-
-			$this->cache->save($cache_key, $cached_value);
-		}
-
-		return $cached_value;
 	}
 
 	/**
@@ -124,13 +100,13 @@ class ChangeLogCloneCommand extends AbstractCommand
 	{
 		$project_key = $this->io->getArgument('project_key');
 
-		if ( !in_array($project_key, $this->getProjectKeys()) ) {
+		if ( !in_array($project_key, $this->jiraApi->getProjectKeys()) ) {
 			throw new CommandException('The project with "' . $project_key . '" key does\'t exist.');
 		}
 
 		$link_name = $this->io->getOption('link-name');
 
-		if ( !in_array($link_name, $this->getLinkNames()) ) {
+		if ( !in_array($link_name, $this->jiraApi->getIssueLinkTypeNames()) ) {
 			throw new CommandException('The "' . $link_name . '" link name doesn\'t exist.');
 		}
 
@@ -170,7 +146,10 @@ class ChangeLogCloneCommand extends AbstractCommand
 		}
 
 		$components = array();
-		$project_components = $this->getProjectComponents($project_key);
+		$project_components = $this->jiraApi->getProjectComponentMapping(
+			$project_key,
+			JiraApi::CACHE_DURATION_ONE_MONTH
+		);
 
 		if ( $project_components ) {
 			$component_name = $this->io->choose(
@@ -197,32 +176,6 @@ class ChangeLogCloneCommand extends AbstractCommand
 			$link_name,
 			$linked_issue_key
 		));
-	}
-
-	/**
-	 * Returns project components.
-	 *
-	 * @param string $project_key Project key.
-	 *
-	 * @return array
-	 */
-	protected function getProjectComponents($project_key)
-	{
-		$cache_key = 'project_components[' . $project_key . ']';
-		$cached_value = $this->cache->fetch($cache_key);
-
-		if ( $cached_value === false ) {
-			$cached_value = array();
-			$project_components = $this->jiraApi->getProjectComponents($project_key);
-
-			foreach ( $project_components as $project_component_data ) {
-				$cached_value[$project_component_data['id']] = $project_component_data['name'];
-			}
-
-			$this->cache->save($cache_key, $cached_value, 2592000); // Cache for 1 month.
-		}
-
-		return $cached_value;
 	}
 
 }

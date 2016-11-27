@@ -11,10 +11,10 @@
 namespace ConsoleHelpers\JiraCLI\Command;
 
 
-use chobie\Jira\Api;
 use chobie\Jira\Api\Result;
 use ConsoleHelpers\ConsoleKit\Config\ConfigEditor;
 use ConsoleHelpers\ConsoleKit\Command\AbstractCommand as BaseCommand;
+use ConsoleHelpers\JiraCLI\JiraApi;
 use Doctrine\Common\Cache\CacheProvider;
 use Stecman\Component\Symfony\Console\BashCompletion\CompletionContext;
 
@@ -34,7 +34,7 @@ abstract class AbstractCommand extends BaseCommand
 	/**
 	 * Jira REST client.
 	 *
-	 * @var Api
+	 * @var JiraApi
 	 */
 	protected $jiraApi;
 
@@ -96,38 +96,10 @@ abstract class AbstractCommand extends BaseCommand
 		$ret = parent::completeArgumentValues($argumentName, $context);
 
 		if ( $argumentName === 'project_key' ) {
-			return $this->getProjectKeys();
+			return $this->jiraApi->getProjectKeys();
 		}
 
 		return $ret;
-	}
-
-	/**
-	 * Returns possible link names.
-	 *
-	 * @return array
-	 */
-	protected function getProjectKeys()
-	{
-		$cache_key = 'projects';
-		$cached_value = $this->cache->fetch($cache_key);
-
-		if ( $cached_value === false ) {
-			$cached_value = array();
-			$response = $this->jiraApi->getProjects();
-
-			if ( $response instanceof Result ) {
-				$response = $response->getResult();
-			}
-
-			foreach ( $response as $project_data ) {
-				$cached_value[] = $project_data['key'];
-			}
-
-			$this->cache->save($cache_key, $cached_value);
-		}
-
-		return $cached_value;
 	}
 
 }
