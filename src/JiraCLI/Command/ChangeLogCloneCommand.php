@@ -45,9 +45,9 @@ class ChangeLogCloneCommand extends AbstractCommand
 				'Issue key, e.g. <comment>JRA-1234</comment>'
 			)
 			->addArgument(
-				'project_key',
-				InputArgument::REQUIRED,
-				'Project key, e.g. <comment>PRJ</comment>'
+				'project_keys',
+				InputArgument::REQUIRED | InputArgument::IS_ARRAY,
+				'Project keys, e.g. <comment>PRJ</comment>'
 			)
 			->addOption(
 				'link-name',
@@ -98,84 +98,88 @@ class ChangeLogCloneCommand extends AbstractCommand
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-		$project_key = $this->io->getArgument('project_key');
-
-		if ( !in_array($project_key, $this->jiraApi->getProjectKeys()) ) {
-			throw new CommandException('The project with "' . $project_key . '" key does\'t exist.');
-		}
-
+		$issue_key = $this->io->getArgument('issue_key');
 		$link_name = $this->io->getOption('link-name');
 
 		if ( !in_array($link_name, $this->jiraApi->getIssueLinkTypeNames()) ) {
 			throw new CommandException('The "' . $link_name . '" link name doesn\'t exist.');
 		}
 
-		$issue_key = $this->io->getArgument('issue_key');
+		$project_keys = $this->io->getArgument('project_keys');
+		$non_existing_projects = array_diff($project_keys, $this->jiraApi->getProjectKeys());
+
+		if ( $non_existing_projects ) {
+			throw new CommandException(
+				'These projects doesn\'t exist: "' . implode('", "', $non_existing_projects) . '".'
+			);
+		}
+
 		$issues = $this->issueCloner->getIssues(
 			'key = ' . $issue_key,
 			$link_name,
 			ChangeLogIssueCloner::LINK_DIRECTION_OUTWARD,
-			$project_key
+			$project_keys
 		);
 		$issue_count = count($issues);
 
-		if ( $issue_count !== 1 ) {
-			throw new CommandException('The "' . $issue_key . '" not found.');
+		if ( !$issue_count ) {
+			throw new CommandException('The "' . $issue_key . '" issue not found.');
 		}
 
-		/** @var Issue[] $issue_pair */
-		$issue_pair = reset($issues);
-		$issue = $issue_pair[0];
-		$linked_issue = $issue_pair[1];
+		foreach ( $issues as $issue_pair ) {
+			/** @var Issue $issue */
+			/** @var Issue $linked_issue */
+			list($issue, $linked_issue, $link_project_key) = $issue_pair;
 
-		$issue_project = $issue->get('project');
+			$issue_project = $issue->get('project');
 
-		if ( $issue_project['key'] === $project_key ) {
-			throw new CommandException('Creating of linked issue in same project is not supported.');
-		}
+			if ( $issue_project['key'] === $link_project_key ) {
+				throw new CommandException('Creating of linked issue in same project is not supported.');
+			}
 
-		if ( is_object($linked_issue) ) {
-			$this->io->writeln(sprintf(
-				'The "<info>%s</info>" issue already has "<info>%s</info>" link to "<info>%s</info>" issue.',
-				$issue->getKey(),
-				$link_name,
-				$linked_issue->getKey()
-			));
+			if ( is_object($linked_issue) ) {
+				$this->io->writeln(sprintf(
+					'The "<info>%s</info>" issue already has "<info>%s</info>" link to "<info>%s</info>" issue.',
+					$issue->getKey(),
+					$link_name,
+					$linked_issue->getKey()
+				));
 
-			return;
-		}
+				continue;
+			}
 
-		$components = array();
-		$project_components = $this->jiraApi->getProjectComponentMapping(
-			$project_key,
-			JiraApi::CACHE_DURATION_ONE_MONTH
-		);
-
-		if ( $project_components ) {
-			$component_name = $this->io->choose(
-				'Select linked issue component:',
-				$project_components,
-				'',
-				'The component isn\'t valid'
+			$components = array();
+			$project_components = $this->jiraApi->getProjectComponentMapping(
+				$link_project_key,
+				JiraApi::CACHE_DURATION_ONE_MONTH
 			);
 
-			$components[] = array_search($component_name, $project_components);
+			if ( $project_components ) {
+				$component_name = $this->io->choose(
+					'Select linked issue component in "' . $link_project_key . '" project:',
+					$project_components,
+					'',
+					'The component isn\'t valid'
+				);
+
+				$components[] = array_search($component_name, $project_components);
+			}
+
+			$linked_issue_key = $this->issueCloner->createLinkedIssue(
+				$issue,
+				$link_project_key,
+				$link_name,
+				ChangeLogIssueCloner::LINK_DIRECTION_OUTWARD,
+				$components
+			);
+
+			$this->io->writeln(sprintf(
+				'The "<info>%s</info>" issue now has "<info>%s</info>" link to "<info>%s</info>" issue.',
+				$issue->getKey(),
+				$link_name,
+				$linked_issue_key
+			));
 		}
-
-		$linked_issue_key = $this->issueCloner->createLinkedIssue(
-			$issue,
-			$project_key,
-			$link_name,
-			ChangeLogIssueCloner::LINK_DIRECTION_OUTWARD,
-			$components
-		);
-
-		$this->io->writeln(sprintf(
-			'The "<info>%s</info>" issue now has "<info>%s</info>" link to "<info>%s</info>" issue.',
-			$issue->getKey(),
-			$link_name,
-			$linked_issue_key
-		));
 	}
 
 }

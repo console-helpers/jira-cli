@@ -11,7 +11,6 @@
 namespace ConsoleHelpers\JiraCLI\Command;
 
 
-use chobie\Jira\Api\Result;
 use ConsoleHelpers\ConsoleKit\Config\ConfigEditor;
 use ConsoleHelpers\ConsoleKit\Command\AbstractCommand as BaseCommand;
 use ConsoleHelpers\JiraCLI\JiraApi;
@@ -95,7 +94,7 @@ abstract class AbstractCommand extends BaseCommand
 	{
 		$ret = parent::completeArgumentValues($argumentName, $context);
 
-		if ( $argumentName === 'project_key' ) {
+		if ( $argumentName === 'project_key' || $argumentName === 'project_keys' ) {
 			return $this->jiraApi->getProjectKeys();
 		}
 

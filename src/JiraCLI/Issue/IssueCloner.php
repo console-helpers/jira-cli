@@ -67,14 +67,14 @@ class IssueCloner
 	/**
 	 * Returns issues.
 	 *
-	 * @param string  $jql              JQL.
-	 * @param string  $link_name        Link name.
-	 * @param integer $link_direction   Link direction.
-	 * @param string  $link_project_key Link project key.
+	 * @param string  $jql               JQL.
+	 * @param string  $link_name         Link name.
+	 * @param integer $link_direction    Link direction.
+	 * @param array   $link_project_keys Link project keys.
 	 *
 	 * @return array
 	 */
-	public function getIssues($jql, $link_name, $link_direction, $link_project_key)
+	public function getIssues($jql, $link_name, $link_direction, array $link_project_keys)
 	{
 		$this->_buildCustomFieldsMap();
 
@@ -84,13 +84,15 @@ class IssueCloner
 		$ret = array();
 
 		foreach ( $walker as $issue ) {
-			$linked_issue = $this->_getLinkedIssue($issue, $link_name, $link_direction, $link_project_key);
+			foreach ( $link_project_keys as $link_project_key ) {
+				$linked_issue = $this->_getLinkedIssue($issue, $link_name, $link_direction, $link_project_key);
 
-			if ( is_object($linked_issue) && $this->isAlreadyProcessed($issue, $linked_issue) ) {
-				continue;
+				if ( is_object($linked_issue) && $this->isAlreadyProcessed($issue, $linked_issue) ) {
+					continue;
+				}
+
+				$ret[] = array($issue, $linked_issue, $link_project_key);
 			}
-
-			$ret[] = array($issue, $linked_issue);
 		}
 
 		return $ret;
