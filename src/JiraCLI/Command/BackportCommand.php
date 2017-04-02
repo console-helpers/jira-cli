@@ -25,6 +25,8 @@ class BackportCommand extends AbstractCommand
 
 	const ISSUE_LINK_NAME = 'Backports';
 
+	const SUMMARY_COLUMN_WIDTH = 70;
+
 	/**
 	 * Issue cloner.
 	 *
@@ -125,14 +127,14 @@ class BackportCommand extends AbstractCommand
 			$issue_status = $this->issueCloner->getIssueStatusName($issue);
 			$row_data = array(
 				$issue->getKey(),
-				$issue->get('summary'),
+				wordwrap($issue->get('summary'), self::SUMMARY_COLUMN_WIDTH),
 				$issue_status,
 			);
 
 			if ( is_object($backported_by_issue) ) {
 				$backported_by_issue_status = $this->issueCloner->getIssueStatusName($backported_by_issue);
 				$row_data[] = $backported_by_issue->getKey();
-				$row_data[] = $backported_by_issue->get('summary');
+				$row_data[] = wordwrap($backported_by_issue->get('summary'), self::SUMMARY_COLUMN_WIDTH);
 				$row_data[] = $backported_by_issue_status;
 			}
 			else {
