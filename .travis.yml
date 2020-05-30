@@ -11,6 +11,7 @@ php:
 install:
     - composer install --prefer-dist
     - wget https://scrutinizer-ci.com/ocular.phar -t 3
+    - export PATH="$HOME/.composer/vendor/bin:$PATH"
     - composer global require "phpunit/phpunit:<8.0" --prefer-dist
 
 before_script:
