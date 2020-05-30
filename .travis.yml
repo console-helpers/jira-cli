@@ -11,6 +11,7 @@ php:
 install:
     - composer install --prefer-dist
     - wget https://scrutinizer-ci.com/ocular.phar -t 3
+    - composer global require "phpunit/phpunit:<8.0" --prefer-dist
 
 before_script:
     - mkdir -p build/logs
