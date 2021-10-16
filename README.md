@@ -1,6 +1,6 @@
 # Jira-CLI
 
-[![Build Status](https://travis-ci.org/console-helpers/jira-cli.svg?branch=master)](https://travis-ci.org/console-helpers/jira-cli)
+[![CI](https://github.com/console-helpers/jira-cli/actions/workflows/tests.yml/badge.svg)](https://github.com/console-helpers/jira-cli/actions/workflows/tests.yml)
 [![codecov](https://codecov.io/gh/console-helpers/jira-cli/branch/master/graph/badge.svg)](https://codecov.io/gh/console-helpers/jira-cli)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/console-helpers/jira-cli/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/console-helpers/jira-cli/?branch=master)
 
