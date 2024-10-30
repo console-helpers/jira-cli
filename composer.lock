@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "081bc3db85cee0b1563b935cd2c22af4",
+    "content-hash": "16a110226c0744776064062dd7d4e68f",
     "packages": [
         {
             "name": "chobie/jira-api-restclient",
@@ -680,6 +680,57 @@
                 "source": "https://github.com/aik099/CodingStandard/tree/master"
             },
             "time": "2021-11-07T16:55:51+00:00"
+        },
+        {
+            "name": "console-helpers/prophecy-phpunit",
+            "version": "v3.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/console-helpers/prophecy-phpunit.git",
+                "reference": "fe66ace435d1ace4732922283a66e4661c9d3a4d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/console-helpers/prophecy-phpunit/zipball/fe66ace435d1ace4732922283a66e4661c9d3a4d",
+                "reference": "fe66ace435d1ace4732922283a66e4661c9d3a4d",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.6 || ^7 || ^8",
+                "phpspec/prophecy": "^1.3",
+                "phpunit/phpunit": "^5.0 || ^6.0 || ^7.0 || ^8.0 || ^9.0 || ^10.0 || ^11.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Prophecy\\PhpUnit\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Christophe Coevoet",
+                    "email": "stof@notk.org"
+                }
+            ],
+            "description": "Integrating the Prophecy mocking library in PHPUnit test cases",
+            "homepage": "http://phpspec.net",
+            "keywords": [
+                "phpunit",
+                "prophecy"
+            ],
+            "support": {
+                "source": "https://github.com/console-helpers/prophecy-phpunit/tree/v3.0.0"
+            },
+            "time": "2024-07-15T12:38:02+00:00"
         },
         {
             "name": "doctrine/instantiator",
@@ -2214,21 +2265,21 @@
         },
         {
             "name": "yoast/phpunit-polyfills",
-            "version": "1.1.2",
+            "version": "2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Yoast/PHPUnit-Polyfills.git",
-                "reference": "e9c8413de4c8ae03d2923a44f17d0d7dad1b96be"
+                "reference": "562f449a2ec8ab92fe7b30d94da9622c7b1345fe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Yoast/PHPUnit-Polyfills/zipball/e9c8413de4c8ae03d2923a44f17d0d7dad1b96be",
-                "reference": "e9c8413de4c8ae03d2923a44f17d0d7dad1b96be",
+                "url": "https://api.github.com/repos/Yoast/PHPUnit-Polyfills/zipball/562f449a2ec8ab92fe7b30d94da9622c7b1345fe",
+                "reference": "562f449a2ec8ab92fe7b30d94da9622c7b1345fe",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.4",
-                "phpunit/phpunit": "^4.8.36 || ^5.7.21 || ^6.0 || ^7.0 || ^8.0 || ^9.0"
+                "php": ">=5.6",
+                "phpunit/phpunit": "^5.7.21 || ^6.0 || ^7.0 || ^8.0 || ^9.0 || ^10.0"
             },
             "require-dev": {
                 "php-parallel-lint/php-console-highlighter": "^1.0.0",
@@ -2273,7 +2324,7 @@
                 "security": "https://github.com/Yoast/PHPUnit-Polyfills/security/policy",
                 "source": "https://github.com/Yoast/PHPUnit-Polyfills"
             },
-            "time": "2024-09-06T22:03:10+00:00"
+            "time": "2024-09-06T22:38:28+00:00"
         }
     ],
     "aliases": [],

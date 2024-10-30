@@ -17,7 +17,7 @@ use Tests\ConsoleHelpers\ConsoleKit\ContainerTest as BaseContainerTest;
 class ContainerTest extends BaseContainerTest
 {
 
-	public function instanceDataProvider()
+	public static function instanceDataProvider()
 	{
 		$instance_data = parent::instanceDataProvider();
 
