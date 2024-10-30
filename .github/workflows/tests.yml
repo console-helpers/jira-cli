@@ -44,7 +44,7 @@ jobs:
 
       - name: Run tests
         run: |
-          vendor/bin/phpunit -v --coverage-clover=coverage.clover
+          vendor/bin/phpunit --coverage-clover=coverage.clover
 
       - name: Upload Coverage to CodeCov
         uses: codecov/codecov-action@v4
