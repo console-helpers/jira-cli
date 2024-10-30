@@ -91,7 +91,7 @@ class CacheFactory
 
 			case 'memcached':
 				$memcached = new \Memcached();
-				$memcached->addServer('memcache_host', 11211);
+				$memcached->addServer('localhost', 11211);
 
 				$cache_driver = new MemcachedCache();
 				$cache_driver->setMemcached($memcached);
