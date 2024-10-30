@@ -21,12 +21,12 @@ jobs:
 
     strategy:
       matrix:
-        php: [ '5.6', '7.0', '7.1', '7.2', '7.3', '7.4', '8.0', '8.1' ]
+        php: [ '5.6', '7.0', '7.1', '7.2', '7.3', '7.4', '8.0', '8.1', '8.2', '8.3' ]
       fail-fast: false
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 2
 
@@ -38,7 +38,7 @@ jobs:
           tools: composer
 
       - name: Install dependencies
-        uses: "ramsey/composer-install@v1"
+        uses: "ramsey/composer-install@v3"
         with:
           dependency-versions: "highest"
 
@@ -47,7 +47,9 @@ jobs:
           vendor/bin/phpunit -v --coverage-clover=coverage.clover
 
       - name: Upload Coverage to CodeCov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Upload Coverage to Scrutinizer CI (PHP < 8.0)
         if: "${{ matrix.php < '8.0' }}"
