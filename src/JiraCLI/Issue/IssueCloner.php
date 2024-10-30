@@ -53,6 +53,13 @@ class IssueCloner
 	protected $queryFields = array('summary', 'issuelinks');
 
 	/**
+	 * Project of an issue.
+	 *
+	 * @var array
+	 */
+	private $_issueProjects = array();
+
+	/**
 	 * IssueCloner constructor.
 	 *
 	 * @param JiraApi $jira_api Jira REST client.
@@ -81,21 +88,99 @@ class IssueCloner
 		$walker = new Walker($this->jiraApi);
 		$walker->push($jql, implode(',', $this->_getQueryFields()));
 
-		$ret = array();
+		$cache = array();
 
 		foreach ( $walker as $issue ) {
 			foreach ( $link_project_keys as $link_project_key ) {
-				$linked_issue = $this->_getLinkedIssue($issue, $link_name, $link_direction, $link_project_key);
+				$linked_issue = $this->_getLinkedIssue($issue, $link_name, $link_direction);
 
-				if ( is_object($linked_issue) && $this->isAlreadyProcessed($issue, $linked_issue) ) {
-					continue;
+				if ( $linked_issue !== null ) {
+					$this->_addToProjectDetectionQueue($linked_issue);
 				}
 
-				$ret[] = array($issue, $linked_issue, $link_project_key);
+				$cache[] = array($issue, $linked_issue, $link_project_key);
+			}
+		}
+
+		$this->_processProjectDetectionQueue();
+
+		$ret = array();
+
+		foreach ( $cache as $cached_data ) {
+			list($issue, $linked_issue, $link_project_key) = $cached_data;
+
+			if ( $linked_issue === null ) {
+				$ret[] = $cached_data;
+				continue;
+			}
+
+			if ( $this->isLinkAccepted($issue, $linked_issue)
+				&& $this->_getIssueProject($linked_issue) === $link_project_key
+				&& !$this->isAlreadyProcessed($issue, $linked_issue)
+			) {
+				$ret[] = $cached_data;
 			}
 		}
 
 		return $ret;
+	}
+
+	/**
+	 * Adds an issue to the project detection queue.
+	 *
+	 * @param Issue $issue Issue.
+	 *
+	 * @return void
+	 */
+	private function _addToProjectDetectionQueue(Issue $issue)
+	{
+		$this->_issueProjects[$issue->getKey()] = null;
+	}
+
+	/**
+	 * Detects projects for queued issues.
+	 *
+	 * @return void
+	 */
+	private function _processProjectDetectionQueue()
+	{
+		$issues_without_projects = array_keys(array_filter($this->_issueProjects, function ($project_key) {
+			return $project_key === null;
+		}));
+
+		if ( !$issues_without_projects ) {
+			return;
+		}
+
+		$walker = new Walker($this->jiraApi);
+		$walker->push(
+			'key IN (' . implode(',', $issues_without_projects) . ')',
+			'project'
+		);
+
+		foreach ( $walker as $linked_issue ) {
+			$linked_issue_project_data = $linked_issue->get('project');
+			$this->_issueProjects[$linked_issue->getKey()] = $linked_issue_project_data['key'];
+		}
+	}
+
+	/**
+	 * Returns an issue project.
+	 *
+	 * @param Issue $issue Issue.
+	 *
+	 * @return string
+	 * @throws \RuntimeException When issue's project isn't available.
+	 */
+	private function _getIssueProject(Issue $issue)
+	{
+		$issue_key = $issue->getKey();
+
+		if ( array_key_exists($issue_key, $this->_issueProjects) ) {
+			return $this->_issueProjects[$issue_key];
+		}
+
+		throw new \RuntimeException('The issue "' . $issue_key . '" project wasn\'t queried.');
 	}
 
 	/**
@@ -131,17 +216,16 @@ class IssueCloner
 	}
 
 	/**
-	 * Returns issue, which backports given issue.
+	 * Returns issue, which backports given issue (project not matched yet).
 	 *
-	 * @param Issue   $issue            Issue.
-	 * @param string  $link_name        Link name.
-	 * @param integer $link_direction   Link direction.
-	 * @param string  $link_project_key Link project key.
+	 * @param Issue   $issue          Issue.
+	 * @param string  $link_name      Link name.
+	 * @param integer $link_direction Link direction.
 	 *
 	 * @return Issue|null
 	 * @throws \InvalidArgumentException When link direction isn't valid.
 	 */
-	private function _getLinkedIssue(Issue $issue, $link_name, $link_direction, $link_project_key)
+	private function _getLinkedIssue(Issue $issue, $link_name, $link_direction)
 	{
 		foreach ( $issue->get('issuelinks') as $issue_link ) {
 			if ( $issue_link['type']['name'] !== $link_name ) {
@@ -159,14 +243,7 @@ class IssueCloner
 			}
 
 			if ( array_key_exists($check_key, $issue_link) ) {
-				$linked_issue = new Issue($issue_link[$check_key]);
-				$linked_issue_data = $this->jiraApi->getIssue($linked_issue->getKey(), 'project')->getResult();
-
-				if ( $this->isLinkAccepted($issue, $linked_issue)
-					&& $linked_issue_data['fields']['project']['key'] === $link_project_key
-				) {
-					return $linked_issue;
-				}
+				return new Issue($issue_link[$check_key]);
 			}
 		}
 
