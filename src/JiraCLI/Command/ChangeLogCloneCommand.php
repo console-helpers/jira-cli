@@ -105,7 +105,7 @@ class ChangeLogCloneCommand extends AbstractCommand
 			throw new CommandException('The "' . $link_name . '" link name doesn\'t exist.');
 		}
 
-		$project_keys = $this->io->getArgument('project_keys');
+		$project_keys = $this->expandProjectKeys($this->io->getArgument('project_keys'));
 		$non_existing_projects = array_diff($project_keys, $this->jiraApi->getProjectKeys());
 
 		if ( $non_existing_projects ) {
@@ -190,6 +190,29 @@ class ChangeLogCloneCommand extends AbstractCommand
 		}
 
 		$this->showStatistics();
+	}
+
+	/**
+	 * Expands project keys.
+	 *
+	 * @param array $project_keys Project keys.
+	 *
+	 * @return array
+	 */
+	protected function expandProjectKeys(array $project_keys)
+	{
+		$ret = array();
+
+		foreach ( $project_keys as $project_key ) {
+			if ( strpos($project_key, ',') === false ) {
+				$ret[] = $project_key;
+			}
+			else {
+				$ret = array_merge($ret, explode(',', $project_key));
+			}
+		}
+
+		return $ret;
 	}
 
 }
