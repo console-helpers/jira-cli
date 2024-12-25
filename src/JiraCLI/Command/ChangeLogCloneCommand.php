@@ -180,6 +180,8 @@ class ChangeLogCloneCommand extends AbstractCommand
 				$linked_issue_key
 			));
 		}
+
+		$this->showStatistics();
 	}
 
 }

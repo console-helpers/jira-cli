@@ -76,6 +76,8 @@ class DownloadAttachmentCommand extends AbstractCommand
 			);
 			$this->io->writeln('done');
 		}
+
+		$this->showStatistics();
 	}
 
 	/**

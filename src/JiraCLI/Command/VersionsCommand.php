@@ -62,6 +62,8 @@ class VersionsCommand extends AbstractCommand
 		foreach ( $versions as $version ) {
 			$this->io->writeln(' * ' . $version);
 		}
+
+		$this->showStatistics();
 	}
 
 }

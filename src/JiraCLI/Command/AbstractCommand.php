@@ -101,4 +101,23 @@ abstract class AbstractCommand extends BaseCommand
 		return $ret;
 	}
 
+	/**
+	 * Shows statistics.
+	 *
+	 * @return void
+	 */
+	protected function showStatistics()
+	{
+		if ( !$this->io->isVerbose() ) {
+			return;
+		}
+
+		$request_count = $this->jiraApi->getRequestCount();
+
+		if ( $request_count ) {
+			$this->io->writeln('===============');
+			$this->io->writeln('API Requests Made: ' . $request_count);
+		}
+	}
+
 }

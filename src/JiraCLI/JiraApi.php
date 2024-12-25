@@ -29,6 +29,39 @@ class JiraApi extends Api
 	protected $cache;
 
 	/**
+	 * Request counter.
+	 *
+	 * @var integer
+	 */
+	protected $requestCounter = 0;
+
+	/**
+	 * @inheritDoc
+	 */
+	public function api(
+		$method = self::REQUEST_GET,
+		$url,
+		$data = array(),
+		$return_as_array = false,
+		$is_file = false,
+		$debug = false
+	) {
+		$this->requestCounter++;
+
+		return parent::api($method, $url, $data, $return_as_array, $is_file, $debug);
+	}
+
+	/**
+	 * Returns request counter.
+	 *
+	 * @return integer
+	 */
+	public function getRequestCount()
+	{
+		return $this->requestCounter;
+	}
+
+	/**
 	 * Sets cache.
 	 *
 	 * @param CacheProvider $cache Cache.

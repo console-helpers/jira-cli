@@ -104,6 +104,8 @@ class BackportCommand extends AbstractCommand
 		else {
 			$this->showBackportableIssues($issues);
 		}
+
+		$this->showStatistics();
 	}
 
 	/**
