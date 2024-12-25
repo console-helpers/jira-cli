@@ -165,12 +165,20 @@ class ChangeLogCloneCommand extends AbstractCommand
 				$components[] = array_search($component_name, $project_components);
 			}
 
+			$start = microtime(true);
+
 			$linked_issue_key = $this->issueCloner->createLinkedIssue(
 				$issue,
 				$link_project_key,
 				$link_name,
 				ChangeLogIssueCloner::LINK_DIRECTION_OUTWARD,
 				$components
+			);
+
+			$this->statistics[] = sprintf(
+				'Issue %s creation time: %ss',
+				$linked_issue_key,
+				round(microtime(true) - $start, 3)
 			);
 
 			$this->io->writeln(sprintf(
