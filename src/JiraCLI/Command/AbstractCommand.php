@@ -45,6 +45,13 @@ abstract class AbstractCommand extends BaseCommand
 	protected $cache;
 
 	/**
+	 * Statistics.
+	 *
+	 * @var array
+	 */
+	protected $statistics = array();
+
+	/**
 	 * Prepare dependencies.
 	 *
 	 * @return void
@@ -115,8 +122,12 @@ abstract class AbstractCommand extends BaseCommand
 		$request_count = $this->jiraApi->getRequestCount();
 
 		if ( $request_count ) {
+			$this->statistics[] = 'API Requests Made: ' . $request_count;
+		}
+
+		if ( $this->statistics ) {
 			$this->io->writeln('===============');
-			$this->io->writeln('API Requests Made: ' . $request_count);
+			$this->io->writeln($this->statistics);
 		}
 	}
 
