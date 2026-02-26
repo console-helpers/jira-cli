@@ -11,13 +11,13 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/chobie/jira-api-restclient.git",
-                "reference": "f9e3b672795ee055fb772fe0d10141a14fd8509a"
+                "url": "https://github.com/console-helpers/jira-api-restclient.git",
+                "reference": "70d9b95cabe102e6e8763333d4be0ee26d931b33"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/chobie/jira-api-restclient/zipball/f9e3b672795ee055fb772fe0d10141a14fd8509a",
-                "reference": "f9e3b672795ee055fb772fe0d10141a14fd8509a",
+                "url": "https://api.github.com/repos/console-helpers/jira-api-restclient/zipball/70d9b95cabe102e6e8763333d4be0ee26d931b33",
+                "reference": "70d9b95cabe102e6e8763333d4be0ee26d931b33",
                 "shasum": ""
             },
             "require": {
@@ -25,9 +25,10 @@
             },
             "require-dev": {
                 "aik099/coding-standard": "dev-master",
+                "console-helpers/prophecy-phpunit": "^3.0",
                 "phpspec/prophecy": "^1.10",
                 "squizlabs/php_codesniffer": "^2.6",
-                "yoast/phpunit-polyfills": "^1.0"
+                "yoast/phpunit-polyfills": "^2.0"
             },
             "default-branch": true,
             "type": "library",
@@ -59,10 +60,10 @@
                 "rest"
             ],
             "support": {
-                "issues": "https://github.com/chobie/jira-api-restclient/issues",
-                "source": "https://github.com/chobie/jira-api-restclient/tree/master"
+                "issues": "https://github.com/console-helpers/jira-api-restclient/issues",
+                "source": "https://github.com/console-helpers/jira-api-restclient/tree/master"
             },
-            "time": "2024-10-29T19:37:30+00:00"
+            "time": "2026-01-12T15:51:36+00:00"
         },
         {
             "name": "console-helpers/console-kit",
@@ -192,6 +193,7 @@
                 "issues": "https://github.com/doctrine/cache/issues",
                 "source": "https://github.com/doctrine/cache/tree/1.6.x"
             },
+            "abandoned": true,
             "time": "2017-07-22T12:49:21+00:00"
         },
         {
@@ -575,12 +577,12 @@
             },
             "type": "library",
             "extra": {
+                "thanks": {
+                    "url": "https://github.com/symfony/polyfill",
+                    "name": "symfony/polyfill"
+                },
                 "branch-alias": {
                     "dev-main": "1.19-dev"
-                },
-                "thanks": {
-                    "name": "symfony/polyfill",
-                    "url": "https://github.com/symfony/polyfill"
                 }
             },
             "autoload": {
@@ -641,12 +643,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/aik099/CodingStandard.git",
-                "reference": "7f80da035830935c5bc1a44eb76302393ab70f0a"
+                "reference": "7fdbc743ea6837d9e3bc6990c7fd1acdbff685ce"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aik099/CodingStandard/zipball/7f80da035830935c5bc1a44eb76302393ab70f0a",
-                "reference": "7f80da035830935c5bc1a44eb76302393ab70f0a",
+                "url": "https://api.github.com/repos/aik099/CodingStandard/zipball/7fdbc743ea6837d9e3bc6990c7fd1acdbff685ce",
+                "reference": "7fdbc743ea6837d9e3bc6990c7fd1acdbff685ce",
                 "shasum": ""
             },
             "require-dev": {
@@ -679,7 +681,7 @@
                 "issues": "https://github.com/aik099/CodingStandard/issues",
                 "source": "https://github.com/aik099/CodingStandard/tree/master"
             },
-            "time": "2021-11-07T16:55:51+00:00"
+            "time": "2025-11-06T09:41:57+00:00"
         },
         {
             "name": "console-helpers/prophecy-phpunit",
@@ -2082,12 +2084,12 @@
             },
             "type": "library",
             "extra": {
+                "thanks": {
+                    "url": "https://github.com/symfony/polyfill",
+                    "name": "symfony/polyfill"
+                },
                 "branch-alias": {
                     "dev-main": "1.19-dev"
-                },
-                "thanks": {
-                    "name": "symfony/polyfill",
-                    "url": "https://github.com/symfony/polyfill"
                 }
             },
             "autoload": {
@@ -2265,16 +2267,16 @@
         },
         {
             "name": "yoast/phpunit-polyfills",
-            "version": "2.0.2",
+            "version": "2.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Yoast/PHPUnit-Polyfills.git",
-                "reference": "562f449a2ec8ab92fe7b30d94da9622c7b1345fe"
+                "reference": "1a6aecc9ebe4a9cea4e1047d0e6c496e52314c27"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Yoast/PHPUnit-Polyfills/zipball/562f449a2ec8ab92fe7b30d94da9622c7b1345fe",
-                "reference": "562f449a2ec8ab92fe7b30d94da9622c7b1345fe",
+                "url": "https://api.github.com/repos/Yoast/PHPUnit-Polyfills/zipball/1a6aecc9ebe4a9cea4e1047d0e6c496e52314c27",
+                "reference": "1a6aecc9ebe4a9cea4e1047d0e6c496e52314c27",
                 "shasum": ""
             },
             "require": {
@@ -2284,12 +2286,12 @@
             "require-dev": {
                 "php-parallel-lint/php-console-highlighter": "^1.0.0",
                 "php-parallel-lint/php-parallel-lint": "^1.4.0",
-                "yoast/yoastcs": "^3.1.0"
+                "yoast/yoastcs": "^3.2.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "3.x-dev"
+                    "dev-main": "4.x-dev"
                 }
             },
             "autoload": {
@@ -2324,7 +2326,7 @@
                 "security": "https://github.com/Yoast/PHPUnit-Polyfills/security/policy",
                 "source": "https://github.com/Yoast/PHPUnit-Polyfills"
             },
-            "time": "2024-09-06T22:38:28+00:00"
+            "time": "2025-08-10T05:13:49+00:00"
         }
     ],
     "aliases": [],
