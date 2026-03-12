@@ -50,7 +50,7 @@ class IssueCloner
 	 *
 	 * @var array
 	 */
-	protected $queryFields = array('summary', 'issuelinks');
+	protected $queryFields = array('summary', 'priority', 'issuelinks');
 
 	/**
 	 * Project of an issue.
@@ -265,8 +265,11 @@ class IssueCloner
 	 */
 	public function createLinkedIssue(Issue $issue, $project_key, $link_name, $link_direction, array $component_ids)
 	{
+		$priority_data = $issue->get('priority');
+
 		$create_fields = array(
 			'description' => 'See ' . $issue->getKey() . '.',
+			'priority' => array('id' => $priority_data['id']),
 			'components' => array(),
 		);
 
