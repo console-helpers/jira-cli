@@ -31,18 +31,13 @@ class ChangeLogIssueCloner extends IssueCloner
 	}
 
 	/**
-	 * Determines if link is accepted.
-	 *
-	 * @param Issue $issue        Issue.
-	 * @param Issue $linked_issue Linked issue.
-	 *
-	 * @return boolean
+	 * @inheritDoc
 	 */
 	protected function isLinkAccepted(Issue $issue, Issue $linked_issue)
 	{
-		$issue_type = $linked_issue->get('issuetype');
+		$linked_issue_type = $linked_issue->get('issuetype');
 
-		return $issue_type['id'] === $this->getChangelogEntryIssueTypeId();
+		return $linked_issue_type['id'] === $this->getChangelogEntryIssueTypeId();
 	}
 
 }

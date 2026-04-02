@@ -91,34 +91,54 @@ class IssueCloner
 		$cache = array();
 
 		foreach ( $walker as $issue ) {
+			$project_links = array();
+			$issue_key = $issue->getKey();
+
 			foreach ( $link_project_keys as $link_project_key ) {
-				$linked_issue = $this->_getLinkedIssue($issue, $link_name, $link_direction);
+				$project_links[$link_project_key] = null;
+			}
 
-				if ( $linked_issue !== null ) {
-					$this->_addToProjectDetectionQueue($linked_issue);
-				}
+			$link_candidates = $this->_getLinkCandidates($issue, $link_name, $link_direction);
 
-				$cache[] = array($issue, $linked_issue, $link_project_key);
+			$cache[$issue_key] = array(
+				'project_links' => $project_links,
+				'link_candidates' => $link_candidates,
+			);
+
+			foreach ( $link_candidates as $link_candidate ) {
+				$this->_addToProjectDetectionQueue($link_candidate);
 			}
 		}
 
+		$ret = array();
 		$this->_processProjectDetectionQueue();
 
-		$ret = array();
+		foreach ( $cache as $issue_key => $issue_cache ) {
+			foreach ( $issue_cache['link_candidates'] as $link_candidate ) {
+				// It's not the link we're about create later.
+				if ( !$this->isLinkAccepted($issue, $link_candidate) ) {
+					continue;
+				}
 
-		foreach ( $cache as $cached_data ) {
-			list($issue, $linked_issue, $link_project_key) = $cached_data;
+				$link_candidate_project = $this->_getIssueProject($link_candidate);
 
-			if ( $linked_issue === null ) {
-				$ret[] = $cached_data;
-				continue;
+				// Link belongs to a project we're not interested in.
+				if ( !array_key_exists($link_candidate_project, $issue_cache['project_links']) ) {
+					continue;
+				}
+
+				$issue_cache['project_links'][$link_candidate_project] = $link_candidate;
 			}
 
-			if ( $this->isLinkAccepted($issue, $linked_issue)
-				&& $this->_getIssueProject($linked_issue) === $link_project_key
-				&& !$this->isAlreadyProcessed($issue, $linked_issue)
-			) {
-				$ret[] = $cached_data;
+			foreach ( $issue_cache['project_links'] as $project_key => $link_candidate ) {
+				if ( $link_candidate === null ) {
+					$ret[] = array($issue, null, $project_key);
+					continue;
+				}
+
+				if ( !$this->isAlreadyProcessed($issue, $link_candidate) ) {
+					$ret[] = array($issue, $link_candidate, $project_key);
+				}
 			}
 		}
 
@@ -216,17 +236,19 @@ class IssueCloner
 	}
 
 	/**
-	 * Returns issue, which backports given issue (project not matched yet).
+	 * Returns issues that are related to a given issue in expected way (project not matched yet).
 	 *
 	 * @param Issue   $issue          Issue.
 	 * @param string  $link_name      Link name.
 	 * @param integer $link_direction Link direction.
 	 *
-	 * @return Issue|null
+	 * @return Issue[]
 	 * @throws \InvalidArgumentException When link direction isn't valid.
 	 */
-	private function _getLinkedIssue(Issue $issue, $link_name, $link_direction)
+	private function _getLinkCandidates(Issue $issue, $link_name, $link_direction)
 	{
+		$ret = array();
+
 		foreach ( $issue->get('issuelinks') as $issue_link ) {
 			if ( $issue_link['type']['name'] !== $link_name ) {
 				continue;
@@ -243,11 +265,11 @@ class IssueCloner
 			}
 
 			if ( array_key_exists($check_key, $issue_link) ) {
-				return new Issue($issue_link[$check_key]);
+				$ret[] = new Issue($issue_link[$check_key]);
 			}
 		}
 
-		return null;
+		return $ret;
 	}
 
 	/**
