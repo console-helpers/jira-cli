@@ -2,3 +2,5 @@ vendor
 phpunit.xml
 build
 tmp
+.claude/settings.local.json
+.claude/worktrees/
