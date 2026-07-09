@@ -32,6 +32,12 @@ class Container extends \ConsoleHelpers\ConsoleKit\Container
 
 		$this['working_directory_sub_folder'] = '.jira-cli';
 
+		$config_file_name = getenv('CONFIG_FILE');
+
+		if ( $config_file_name !== false ) {
+			$this['config_file'] = '{base}/' . $config_file_name;
+		}
+
 		$this['config_defaults'] = array(
 			'jira.url' => '',
 			'jira.username' => '',
