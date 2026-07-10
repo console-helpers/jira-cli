@@ -27,7 +27,7 @@ class ChangeLogIssueCloner extends IssueCloner
 		parent::__construct($jira_api);
 
 		$this->queryFields[] = 'project';
-		$this->queryFields[] = 'type';
+		$this->queryFields[] = 'type'; // TODO: Has any effect?
 	}
 
 	/**

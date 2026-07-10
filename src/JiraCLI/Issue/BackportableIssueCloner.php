@@ -28,6 +28,7 @@ class BackportableIssueCloner extends IssueCloner
 
 		$this->queryFields[] = 'status';
 		$this->queryFields[] = 'components';
+		$this->queryFields[] = 'issuetype';
 	}
 
 	/**
@@ -44,6 +45,16 @@ class BackportableIssueCloner extends IssueCloner
 		$linked_issue_status = $this->getIssueStatusName($linked_issue);
 
 		return $issue_status === 'Resolved' && $linked_issue_status === 'Resolved';
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	protected function isLinkAccepted(Issue $issue, Issue $linked_issue)
+	{
+		$linked_issue_type = $linked_issue->get('issuetype');
+
+		return $linked_issue_type['id'] === $this->getChangelogEntryIssueTypeId();
 	}
 
 }

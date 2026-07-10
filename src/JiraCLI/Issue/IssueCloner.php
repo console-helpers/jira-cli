@@ -90,9 +90,9 @@ class IssueCloner
 
 		$cache = array();
 
+		// TODO: Doesn't work for backportable issues.
 		foreach ( $walker as $issue ) {
 			$project_links = array();
-			$issue_key = $issue->getKey();
 
 			foreach ( $link_project_keys as $link_project_key ) {
 				$project_links[$link_project_key] = null;
@@ -100,7 +100,8 @@ class IssueCloner
 
 			$link_candidates = $this->_getLinkCandidates($issue, $link_name, $link_direction);
 
-			$cache[$issue_key] = array(
+			$cache[] = array(
+				'issue' => $issue,
 				'project_links' => $project_links,
 				'link_candidates' => $link_candidates,
 			);
@@ -113,7 +114,9 @@ class IssueCloner
 		$ret = array();
 		$this->_processProjectDetectionQueue();
 
-		foreach ( $cache as $issue_key => $issue_cache ) {
+		foreach ( $cache as $issue_cache ) {
+			$issue = $issue_cache['issue'];
+
 			foreach ( $issue_cache['link_candidates'] as $link_candidate ) {
 				// It's not the link we're about create later.
 				if ( !$this->isLinkAccepted($issue, $link_candidate) ) {
