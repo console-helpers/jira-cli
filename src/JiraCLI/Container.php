@@ -13,6 +13,7 @@ namespace ConsoleHelpers\JiraCLI;
 
 use chobie\Jira\Api\Authentication\Basic;
 use ConsoleHelpers\ConsoleKit\Config\ConfigEditor;
+use ConsoleHelpers\ConsoleKit\Exception\ApplicationException;
 use ConsoleHelpers\JiraCLI\Cache\CacheFactory;
 use ConsoleHelpers\JiraCLI\Issue\BackportableIssueCloner;
 use ConsoleHelpers\JiraCLI\Issue\ChangeLogIssueCloner;
@@ -37,6 +38,31 @@ class Container extends \ConsoleHelpers\ConsoleKit\Container
 		if ( $config_file_name !== false ) {
 			$this['config_file'] = '{base}/' . $config_file_name;
 		}
+
+		$this['config_editor'] = function ($c) use ($config_file_name) {
+			$working_directory = $c['working_directory'];
+			$config_file = str_replace('{base}', $working_directory, $c['config_file']);
+
+			if ( $config_file_name && !file_exists($config_file) ) {
+				$available_config_files = glob($working_directory . '/*.json') ?: array();
+				$available_config_files = array_map('basename', $available_config_files);
+
+				if ( $available_config_files ) {
+					throw new ApplicationException(sprintf(
+						'The "%s" config file doesn\'t exist. Other config files: %s.',
+						$config_file,
+						implode(', ', $available_config_files)
+					));
+				}
+
+				throw new ApplicationException(sprintf(
+					'The "%s" config file doesn\'t exist.',
+					$config_file
+				));
+			}
+
+			return new ConfigEditor($config_file, $c['config_defaults']);
+		};
 
 		$this['config_defaults'] = array(
 			'jira.url' => '',
